@@ -1,9 +1,56 @@
-from pathlib import Path
-p = Path("/mnt/data/Văn bản đã dán (1)(4).txt")
-text = p.read_text(encoding="utf-8")
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hành Trình Dũng Sĩ Tin Học Lớp 5</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Nunito', sans-serif;
+            user-select: none;
+        }
+        .bg-pattern {
+            background-color: #4f46e5;
+            background-image: radial-gradient(#6366f1 2px, transparent 2px), radial-gradient(#6366f1 2px, #4f46e5 2px);
+            background-size: 80px 80px;
+            background-position: 0 0, 40px 40px;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 4px solid #312e81;
+            box-shadow: 0 10px 0px #1e1b4b;
+        }
+        .btn-game {
+            transition: all 0.1s ease;
+            box-shadow: 0 6px 0px rgba(0,0,0,0.2);
+        }
+        .btn-game:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 0px rgba(0,0,0,0.2);
+        }
+        .btn-game:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0px rgba(0,0,0,0.2);
+        }
+        .bounce-anim {
+            animation: bounce 2s infinite;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        .pulse-glow {
+            animation: pulse-glow 1.5s infinite alternate;
+        }
+        @keyframes pulse-glow {
+            from { box-shadow: 0 0 10px #fbbf24, 0 0 20px #fbbf24; }
+            to { box-shadow: 0 0 20px #f59e0b, 0 0 35px #f59e0b; }
+        }
 
-# Add a fixed responsive viewport/container system while preserving the existing game logic.
-css = r"""
         /* ===== GIAO DIỆN CỐ ĐỊNH THEO KHUNG THIẾT BỊ ===== */
         html, body {
             width: 100%;
@@ -277,20 +324,501 @@ css = r"""
                 margin-bottom: 8px !important;
             }
         }
-"""
 
-# Insert CSS before the existing </style>.
-text = text.replace("    </style>", css + "\n    </style>", 1)
+    </style>
+</head>
+<body class="bg-pattern min-h-screen flex items-center justify-center p-2 sm:p-4 text-slate-800">
 
-# Add a dedicated wrapper class to the main container.
-text = text.replace(
-    '<div class="w-full max-w-4xl glass-card rounded-3xl p-4 sm:p-8 relative overflow-hidden">',
-    '<div class="game-shell w-full max-w-4xl glass-card rounded-3xl p-4 sm:p-8 relative overflow-hidden">'
-)
+    <!-- CONTAINER CHÍNH -->
+    <div class="game-shell w-full max-w-4xl glass-card rounded-3xl p-4 sm:p-8 relative overflow-hidden">
+        
+        <!-- HEADER / THANH TRẠNG THÁI (HUD) -->
+        <div id="hud" class="hidden flex-wrap justify-between items-center bg-indigo-100 p-3 sm:p-4 rounded-2xl mb-6 border-2 border-indigo-300 gap-2">
+            <div class="flex items-center gap-3">
+                <div class="bg-red-500 text-white font-extrabold px-3 py-1.5 rounded-xl shadow flex items-center gap-1.5 text-base sm:text-lg">
+                    <i class="fa-solid fa-heart text-white text-xl"></i>
+                    <span id="lives-count">3</span>
+                </div>
+                <div class="bg-amber-400 text-amber-950 font-black px-3 py-1.5 rounded-xl shadow flex items-center gap-1 text-base sm:text-lg">
+                    <i class="fa-solid fa-star text-amber-100"></i>
+                    <span id="score">0</span>
+                </div>
+                <div id="combo-badge" class="hidden bg-purple-600 text-white font-extrabold px-3 py-1 rounded-xl shadow animate-bounce text-sm sm:text-base">
+                    ⚡ Combo x<span id="combo-count">1</span>!
+                </div>
+            </div>
 
-# Add responsive image-click renderer if not already present.
-marker = "        function loadQuestion() {"
-helper = r"""
+            <div class="flex items-center gap-3">
+                <div class="text-right">
+                    <div class="text-xs font-bold text-indigo-700 uppercase tracking-wider" id="stage-title">Trạm 1/4</div>
+                    <div class="text-sm font-extrabold text-indigo-950" id="progress-text">Câu 1/20</div>
+                </div>
+                <button id="sound-btn" onclick="toggleSound()" class="w-10 h-10 bg-indigo-200 hover:bg-indigo-300 rounded-xl flex items-center justify-center text-indigo-800 text-lg transition">
+                    <i class="fa-solid fa-volume-high" id="sound-icon"></i>
+                </button>
+            </div>
+            
+            <!-- Thanh tiến trình (Progress Bar) -->
+            <div class="w-full bg-indigo-200 h-3 rounded-full overflow-hidden mt-2 border border-indigo-300">
+                <div id="progress-bar" class="bg-gradient-to-r from-emerald-400 to-green-500 h-full w-0 transition-all duration-300"></div>
+            </div>
+        </div>
+
+        <!-- MAN HINH 1: BẮT ĐẦU (START SCREEN) -->
+        <div id="screen-start" class="text-center py-6">
+            <div class="inline-block bg-yellow-300 text-yellow-950 font-black px-4 py-1.5 rounded-full text-sm uppercase tracking-widest mb-3 border-2 border-yellow-500 shadow-sm">
+                Ôn Tập Tin Học - Chủ Đề 1 - TEST 2
+            </div>
+            <h1 class="text-3xl sm:text-5xl font-black text-indigo-950 mb-4 leading-tight">
+                HÀNH TRÌNH DŨNG SĨ<br><span class="text-indigo-600">THẾ GIỚI SỐ</span> 🚀
+            </h1>
+            
+            <div class="flex justify-center mb-6">
+                <div class="relative w-36 h-36 sm:w-44 sm:h-44 bg-indigo-100 rounded-full flex items-center justify-center border-4 border-indigo-400 shadow-inner bounce-anim">
+                    <i class="fa-solid fa-robot text-7xl sm:text-8xl text-indigo-600"></i>
+                    <div class="absolute -bottom-2 bg-indigo-900 text-white text-xs font-bold px-3 py-1 rounded-full">Robo-Guide</div>
+                </div>
+            </div>
+
+            <p class="text-slate-600 text-base sm:text-lg mb-6 max-w-lg mx-auto font-semibold">
+                Chào mừng em đến với hành trình ôn tập! Hãy vượt qua 4 trạm thử thách để thu thập sao và trở thành <strong class="text-indigo-700">Dũng Sĩ Tin Học</strong> nhé!
+            </p>
+
+            <div class="max-w-md mx-auto mb-6">
+                <input type="text" id="player-name" placeholder="Nhập tên của em ở đây..." class="w-full px-5 py-3 rounded-2xl border-3 border-indigo-300 text-center text-lg font-bold text-indigo-950 focus:outline-none focus:border-indigo-600 bg-indigo-50/50 shadow-inner">
+            </div>
+
+            <button onclick="startGame()" class="btn-game bg-emerald-500 hover:bg-emerald-600 text-white font-black text-xl sm:text-2xl px-10 py-4 rounded-2xl cursor-pointer pulse-glow uppercase tracking-wider inline-flex items-center gap-3">
+                <i class="fa-solid fa-play"></i> BẮT ĐẦU CHƠI NGAY!
+            </button>
+        </div>
+
+        <!-- MAN HINH 2: CHƠI GAME (GAMEPLAY SCREEN) -->
+        <div id="screen-game" class="hidden">
+            <!-- Thẻ câu hỏi -->
+            <div class="bg-indigo-50 border-2 border-indigo-200 rounded-2xl p-5 sm:p-6 mb-6 shadow-sm">
+                <div class="flex items-center gap-2 text-indigo-600 font-bold text-sm mb-2" id="question-category">
+                    <i class="fa-solid fa-layer-group"></i> <span>Chủ đề</span>
+                </div>
+                <h2 id="question-text" class="text-lg sm:text-2xl font-black text-slate-800 leading-snug">
+                    Nội dung câu hỏi sẽ hiển thị ở đây...
+                </h2>
+            </div>
+
+            <!-- Các lựa chọn đáp án (Trắc nghiệm A, B, C, D) -->
+            <div id="options-container" class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-6">
+                <!-- Javascript sẽ render câu trả lời vào đây -->
+            </div>
+
+            <!-- Dạng bài đúng/sai (Khảo sát Tính năng) -->
+            <div id="binary-container" class="hidden bg-white border-2 border-slate-200 rounded-2xl p-4 mb-6">
+                <div class="text-center font-bold text-slate-700 mb-4 text-base sm:text-lg">Đánh giá từng tính năng bên dưới:</div>
+                <div id="binary-items" class="space-y-3">
+                    <!-- Dynamic Binary Rows -->
+                </div>
+                <button onclick="submitBinaryAnswer()" class="btn-game w-full mt-4 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold py-3 rounded-xl text-lg">
+                    XÁC NHẬN ĐÁP ÁN
+                </button>
+            </div>
+
+            <!-- Khung Giải Thích / Phản Hồi Kết Quả -->
+            <div id="feedback-card" class="hidden rounded-2xl p-4 sm:p-5 mb-4 border-2">
+                <div class="flex items-start gap-3">
+                    <div id="feedback-icon" class="text-3xl"></div>
+                    <div>
+                        <h4 id="feedback-title" class="font-black text-lg"></h4>
+                        <p id="feedback-text" class="text-sm sm:text-base font-semibold mt-1"></p>
+                    </div>
+                </div>
+                <button onclick="nextQuestion()" class="btn-game mt-4 bg-indigo-900 hover:bg-slate-800 text-white font-extrabold px-6 py-2.5 rounded-xl text-base float-right">
+                    Câu Tiếp Theo <i class="fa-solid fa-arrow-right ml-1"></i>
+                </button>
+                <div class="clear-both"></div>
+            </div>
+        </div>
+
+        <!-- MAN HINH 3: KẾT THÚC & GIẤY KHEN (VICTORY / GAMEOVER SCREEN) -->
+        <div id="screen-end" class="hidden text-center py-6">
+            <div id="end-header"></div>
+
+            <!-- Giấy khen điện tử -->
+            <div class="bg-amber-50 border-4 border-amber-400 rounded-3xl p-6 sm:p-8 my-6 relative shadow-lg max-w-xl mx-auto text-left">
+                <div class="absolute top-3 right-4 text-amber-300 text-5xl opacity-40"><i class="fa-solid fa-award"></i></div>
+                <div class="text-center border-b-2 border-amber-200 pb-4 mb-4">
+                    <div class="text-amber-800 font-extrabold text-xs uppercase tracking-widest">CHỨNG NHẬN HOÀN THÀNH</div>
+                    <h3 class="text-2xl sm:text-3xl font-black text-amber-900">DŨNG SĨ TIN HỌC LỚP 5</h3>
+                </div>
+
+                <div class="space-y-3 font-semibold text-slate-700">
+                    <p>Trao tặng cho học sinh: <span id="cert-name" class="font-black text-indigo-950 text-xl underline decoration-amber-400">...</span></p>
+                    <p>Đã xuất sắc đạt thành tích ôn tập:</p>
+                    <div class="grid grid-cols-2 gap-3 text-center my-3">
+                        <div class="bg-amber-100/70 p-3 rounded-xl border border-amber-300">
+                            <div class="text-xs text-amber-800 font-bold">Tổng Điểm</div>
+                            <div id="cert-score" class="text-2xl font-black text-amber-900">0</div>
+                        </div>
+                        <div class="bg-amber-100/70 p-3 rounded-xl border border-amber-300">
+                            <div class="text-xs text-amber-800 font-bold">Đánh Giá</div>
+                            <div id="cert-rank" class="text-lg font-black text-emerald-700">Xuất Sắc</div>
+                        </div>
+                    </div>
+                    <p id="cert-message" class="text-sm italic text-slate-600 text-center">"Em đã nắm vững toàn bộ kiến thức Tin học Chủ đề 1!"</p>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap justify-center">
+                <button onclick="restartGame()" class="btn-game bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold px-8 py-3.5 rounded-2xl text-lg inline-flex items-center gap-2">
+                    <i class="fa-solid fa-rotate-left"></i> CHƠI LẠI TỪ ĐẦU
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- NGÂN HÀNG CÂU HỎI 30 CÂU TÍCH HỢP AI & TIN HỌC LỚP 5 ---
+     const questionBank = [
+    // --- BỘ CÂU HỎI THEO NỘI DUNG YÊU CẦU ---
+    {
+        category: "Trạm 1: Quy Trình Truy Cập Web",
+        text: "Em cần mô tả các bước xảy ra khi dùng trình duyệt Web để truy cập www.companypro.net. Chọn đúng tùy chọn phù hợp:",
+        options: [
+            "1. Kết nối được thiết lập đến Máy chủ Web (Web Server) -> 2. Trang (Webpage) được gửi đến máy tính -> 3. Trình duyệt Web hiển thị trang Web",
+            "1. Trang (Webpage) gửi về -> 2. Trình duyệt Web hiển thị -> 3. Kết nối được thiết lập đến Máy chủ Web",
+            "1. Trình duyệt Web hiển thị trang Web -> 2. Khởi động lại thiết bị -> 3. Kết nối được thiết lập",
+            "1. Kết nối đến địa chỉ IP -> 2. Tắt nguồn thiết bị -> 3. Hiển thị trang Web"
+        ],
+        correct: 0,
+        explain: "Quy trình chuẩn: Trình duyệt kết nối đến Máy chủ Web -> Máy chủ phản hồi trang Web (Webpage) về -> Trình duyệt hiển thị nội dung trang cho em[cite: 5, 8]."
+    },
+    {
+        category: "Trạm 1: Tên Miền Tổ Chức",
+        text: "Em định quyên góp cho một tổ chức gây quỹ và muốn đảm bảo mình đang ở đúng trang Web. Tùy chọn nào sau đây là phần đuôi tên miền ĐÚNG cho trang Web chính thức của một tổ chức phi lợi nhuận?",
+        options: [".edu", ".net", ".org", ".com"],
+        correct: 2,
+        explain: "Tên miền .org đại diện cho các tổ chức (Organization), thường dành cho các tổ chức phi lợi nhuận[cite: 4, 8]."
+    },
+    {
+        category: "Trạm 1: Bảo Mật & Đơn Vị Vị Trí",
+        text: "Khi tìm một nhà hàng bán thức ăn nhanh trên mạng, hành động nào sẽ có thể giúp ẩn vị trí của em?",
+        options: [
+            "Tải phần mềm chặn quảng cáo",
+            "Xóa Cookies của em",
+            "Xóa Cache (bộ đệm ẩn) sau khi ngừng duyệt Web",
+            "Bật duyệt Web ở chế độ riêng tư"
+        ],
+        correct: 3,
+        explain: "Bật chế độ riêng tư (Incognito/Private) giúp hạn chế lưu trữ lịch sử và vị trí trực tuyến tạm thời khi duyệt mạng[cite: 6, 8]."
+    },
+    {
+        category: "Trạm 1: Khả Năng Ứng Dụng Công Nghệ",
+        type: "binary",
+        text: "Với mỗi phát biểu về công nghệ, chọn CÓ nếu đây là một điều khả thi hoặc KHÔNG nếu không phải:",
+        items: [
+            { label: "Các công nhân ở một khu mỏ có thể nhận được dữ liệu thời gian thực từ các công nhân ở một khu mỏ khác.", correct: true },
+            { label: "Một y tá làm việc từ xa có thể sử dụng dữ liệu y tế thời gian thực để chẩn đoán các vấn đề cho một bệnh nhân ở nhà.", correct: true },
+            { label: "Máy học (Machine Learning) có thể giúp các nhạc sĩ sáng tác thêm nhiều bài hát nổi tiếng.", correct: true }
+        ],
+        explain: "Tất cả các trường hợp trên đều là tính năng hoàn toàn khả thi của Dữ liệu thời gian thực và Trí tuệ nhân tạo/Máy học[cite: 6, 8]."
+    },
+    {
+        category: "Trạm 2: Thuật Ngữ Mạng & Dữ Liệu",
+        text: "Thuật ngữ nào chỉ các bit dữ liệu nhỏ được thu thập bởi trang Web mà em truy cập để ghi nhớ thông tin đăng nhập hoặc tùy chọn?",
+        options: ["Dữ kiện", "Tấn công xâm nhập (Hacking)", "Cookies", "Bảng tính"],
+        correct: 2,
+        explain: "Cookies là các tệp dữ liệu nhỏ do trang web lưu giữ trên thiết bị của người dùng[cite: 6, 8]."
+    },
+    {
+        category: "Trạm 2: Đánh Giá Tính Năng USB",
+        type: "binary",
+        text: "Đánh giá các tính năng của USB Drive. Chọn CÓ nếu đúng là tính năng của USB và KHÔNG nếu không phải:",
+        items: [
+            { label: "Có thể mang theo dễ dàng", correct: true },
+            { label: "Cung cấp không gian lưu trữ dữ liệu", correct: true },
+            { label: "Truyền tải tập tin giữa các máy tính", correct: true },
+            { label: "Kết nối không dây (Wireless)", correct: false }
+        ],
+        explain: "USB Flash Drive là thiết bị phần cứng cắm qua cổng cắm vật lý, KHÔNG PHẢI kết nối không dây[cite: 5, 8]."
+    },
+    {
+        category: "Trạm 2: Tương Tác Giao Diện Trình Duyệt",
+        type: "image-click",
+        text: "Em nên nhập www.companypro.net vào vị trí nào trên trình duyệt Web để có thể truy cập trực tiếp đến trang Web? Hãy nhấp chuột vào hình ảnh bên dưới để chọn vị trí phù hợp:",
+        imageSrc: "https://static0.anpoimages.com/wordpress/wp-content/uploads/2023/09/customize_chrome_inline-anim.gif?q=50&fit=crop&w=825&dpr=1.5",
+        // Tọa độ % tương đối của vùng khoanh xanh Thanh địa chỉ (Address bar)
+        hotspot: { top: 7, left: 12, width: 75, height: 6 },
+        explain: "Chính xác! Nhập URL trực tiếp vào Thanh địa chỉ (Address Bar) nằm ngang ở trên cùng giúp mở thẳng trang Web."
+    },
+    {
+        category: "Trạm 2: Thiết Bị Lưu Trữ",
+        text: "Tùy chọn nào dưới đây mô tả đúng nhất về thiết bị USB Drive?",
+        options: [
+            "Một thiết bị nhớ hoạt động trên đám mây",
+            "Một không gian lưu trữ trên một ổ cứng",
+            "Một cơ sở dữ liệu lưu trữ các tập tin trực tuyến",
+            "Một thiết bị lưu trữ dạng cắm"
+        ],
+        correct: 3,
+        explain: "USB Drive là loại thiết bị phần cứng lưu trữ di động kết nối dạng cắm."
+    },
+    {
+        category: "Trạm 3: Định Nghĩa Địa Chỉ Web",
+        text: "Khái niệm URL (Uniform Resource Locator) được hiểu đúng nhất là gì?",
+        options: [
+            "Nhà phát hành của một trang Web",
+            "Địa chỉ của một trang Web",
+            "Tác giả của một trang Web",
+            "Tên của một trang Web"
+        ],
+        correct: 1,
+        explain: "URL là chuỗi địa chỉ duy nhất dùng để định vị một tài nguyên/trang web trên Internet."
+    },
+    {
+        category: "Trạm 3: Khắc Phục Sự Cố Máy Tính",
+        text: "Máy tính của em hoạt động đột ngột bị chậm. Em nên làm gì trước tiên?",
+        options: [
+            "Đóng các ứng dụng hoặc cửa sổ không sử dụng",
+            "Cập nhật lại hệ điều hành",
+            "Rút phích cắm máy tính ngay lập tức",
+            "Nhấp chuột liên tục"
+        ],
+        correct: 0,
+        explain: "Đóng bớt các ứng dụng đang chạy ẩn sẽ ngay lập tức giải phóng dung lượng RAM giúp máy chạy mượt lại."
+    },
+    {
+        category: "Trạm 3: Định Dạng URL Chẩn",
+        text: "Địa chỉ URL nào sau đây có cấu trúc định dạng ĐÚNG chuẩn?",
+        options: [
+            "http://www.companypro/test",
+            "https://.companypro.net/test",
+            "https://www.companypro.net/test",
+            "https://www.companypro/net/test"
+        ],
+        correct: 2,
+        explain: "URL hợp lệ phải gồm Giao thức (https://) + Tên miền đầy đủ (www.companypro.net) + Đường dẫn (/test)[cite: 4, 8]."
+    },
+    {
+        category: "Trạm 3: Phân Loại Thiết Bị Lưu Trữ",
+        text: "Em chọn giải pháp lưu trữ nào phù hợp nhất khi muốn sao chép hình ảnh giữa hai máy tính mà KHÔNG CÓ KẾT NỐI MẠNG?",
+        options: [
+            "Lưu trữ đám mây (Cloud Storage)",
+            "USB Drive",
+            "Gửi qua Email",
+            "Ổ cứng trực tuyến"
+        ],
+        correct: 1,
+        explain: "USB Drive không cần kết nối mạng để truyền hay chép dữ liệu giữa các máy tính[cite: 5, 8]."
+    },
+    {
+        category: "Trạm 4: Xử Lý Lỗi Thiết Bị Ngoại Vi",
+        text: "Máy in của em ngừng in đột ngột, em nên làm gì trước tiên để giải quyết vấn đề này?",
+        options: [
+            "Khởi động lại máy tính",
+            "Kiểm tra dây cáp hoặc kết nối của máy in",
+            "Thay đổi trình điều khiển máy in (Driver)",
+            "Dọn sạch hàng chờ máy in"
+        ],
+        correct: 1,
+        explain: "Luôn kiểm tra các yếu tố vật lý cơ bản (dây nguồn, dây cáp USB, cáp mạng) đầu tiên khi gặp sự cố phần cứng[cite: 6, 8]."
+    },
+    {
+        category: "Trạm 4: Công Nghệ Định Hướng Vị Trí",
+        text: "Orson là tài xế xe buýt trường học đang chở học sinh đến một điểm tham quan chưa từng đến. Anh ấy nên dùng loại công nghệ nào để định hướng vị trí chính xác?",
+        options: [
+            "Radio",
+            "Quả địa cầu (Globe)",
+            "Máy phát MP3 (MP3 Player)",
+            "GPS (Global Positioning System)"
+        ],
+        correct: 3,
+        explain: "GPS (Hệ thống định vị toàn cầu) giúp định vị tọa độ và dẫn đường trên bản đồ số[cite: 4, 8]."
+    },
+
+    // --- BỘ CÂU HỎI BỔ SUNG VỀ TRÍ TUỆ NHÂN TẠO TẠO SINH (GEN AI) ---
+    {
+        category: "Trạm 5: Khái Niệm AI Tạo Sinh",
+        text: "Trí tuệ nhân tạo tạo sinh (Generative AI) được hiểu đúng nhất là công cụ có khả năng gì?",
+        options: [
+            "Chỉ dùng để tính toán các phép toán số học đơn giản",
+            "Tự động tạo ra các nội dung mới như văn bản, hình ảnh, âm thanh, câu trả lời dựa trên yêu cầu",
+            "Tự động sửa chữa phần cứng máy tính bị hỏng",
+            "In tài liệu ra giấy mà không cần dùng mực"
+        ],
+        correct: 1,
+        explain: "AI tạo sinh (Generative AI) có khả năng tổng hợp dữ liệu để tạo ra nội dung hoàn toàn mới theo câu lệnh yêu cầu của người dùng[cite: 6]."
+    },
+    {
+        category: "Trạm 5: Đặt Câu Lệnh AI (Prompting)",
+        text: "Để công cụ AI tạo ra một hình ảnh chú robot trồng cây chính xác nhất theo ý em, câu lệnh (Prompt) nào dưới đây là hiệu quả nhất?",
+        options: [
+            "Vẽ robot",
+            "Hãy vẽ cho tôi một con robot thông minh",
+            "Hãy vẽ một chú robot thân thiện màu xanh lá đang tưới cây trên Mặt Trăng, phong cách hoạt hình 3D tươi sáng",
+            "Robot và cây xanh"
+        ],
+        correct: 2,
+        explain: "Câu lệnh càng chi tiết về đối tượng, màu sắc, hành động, bối cảnh và phong cách nghệ thuật thì AI càng cho ra kết quả chính xác[cite: 6]."
+    },
+    {
+        category: "Trạm 5: Kiểm Chứng Thông Tin AI",
+        text: "Khi sử dụng các công cụ AI để tìm kiếm câu trả lời cho bài học, em NÊN thực hiện hành động nào sau đây?",
+        options: [
+            "Tin tưởng tuyệt đối và chép ngay vào bài tập",
+            "Kiểm tra và so sánh lại kết quả của AI với Sách giáo khoa hoặc nguồn thông tin uy tín",
+            "Gửi ngay câu trả lời cho bạn bè mà không cần đọc",
+            "Tắt máy tính vì AI luôn trả lời sai"
+        ],
+        correct: 1,
+        explain: "AI đôi khi có thể tạo ra thông tin không chính xác (ảo giác AI). Học sinh luôn cần đối chiếu lại với Sách giáo khoa hoặc hỏi giáo viên[cite: 4, 6]."
+    },
+    {
+        category: "Trạm 5: Khác Biệt Giữa AI Và Tìm Kiếm",
+        text: "Điểm khác biệt chính giữa công cụ AI tạo sinh và công cụ tìm kiếm truyền thống (như Google Search) là gì?",
+        options: [
+            "Công cụ tìm kiếm liệt kê các đường liên kết trang Web, còn AI tạo sinh có thể tổng hợp và tự viết câu trả lời trực tiếp",
+            "Công cụ tìm kiếm không cần kết nối Internet",
+            "AI tạo sinh luôn cho kết quả đúng 100%",
+            "Công cụ tìm kiếm chỉ hoạt động vào ban ngày"
+        ],
+        correct: 0,
+        explain: "Công cụ tìm kiếm giúp tìm và liệt kê các trang web liên quan, trong khi AI tạo sinh có thể xử lý, tóm tắt và trình bày câu trả lời hoàn chỉnh[cite: 6]."
+    },
+    {
+        category: "Trạm 5: An Toàn Khi Dùng AI",
+        text: "Nguyên tắc AN TOÀN quan trọng nhất em cần tuân thủ khi sử dụng các công cụ trò chuyện với AI là gì?",
+        options: [
+            "Không bao giờ chia sẻ thông tin cá nhân (như họ tên đầy đủ, địa chỉ nhà, số điện thoại, mật khẩu)",
+            "Chỉ được trò chuyện với AI bằng Tiếng Anh",
+            "Phải nộp tiền trước khi hỏi AI",
+            "Chỉ dùng AI trên điện thoại di động"
+        ],
+        correct: 0,
+        explain: "Bảo vệ dữ liệu cá nhân là quy tắc hàng đầu: Tuyệt đối không nhập thông tin riêng tư hay mật khẩu vào các hệ thống AI trực tuyến[cite: 6]."
+    },
+    {
+        category: "Trạm 5: Huấn Luyện AI",
+        text: "Chất lượng kết quả trả lời của một mô hình Trí tuệ nhân tạo (AI) phụ thuộc chủ yếu vào yếu tố nào?",
+        options: [
+            "Kích thước màn hình máy tính",
+            "Dữ liệu được dùng để huấn luyện AI (chất lượng, độ đa dạng và tính chính xác của dữ liệu)",
+            "Màu sắc của chuột máy tính",
+            "Tốc độ gõ phím của người dùng"
+        ],
+        correct: 1,
+        explain: "AI học hỏi quy luật từ dữ liệu. Nếu dữ liệu huấn luyện bị thiếu, sai lệch hoặc không đa dạng, kết quả AI tạo ra sẽ không chính xác[cite: 5]."
+    }
+];
+        // --- BIẾN TRẠNG THÁI GAME ---
+        let currentQuestions = [];
+        let currentIndex = 0;
+        let score = 0;
+        let lives = 3;
+        let combo = 0;
+        let playerName = "";
+        let soundEnabled = true;
+
+        // Web Audio API để tạo âm thanh vui nhộn
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playSound(type) {
+            if (!soundEnabled) return;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            const now = audioCtx.currentTime;
+            if (type === 'correct') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(523.25, now); // C5
+                osc.frequency.setValueAtTime(659.25, now + 0.1); // E5
+                osc.frequency.setValueAtTime(783.99, now + 0.2); // G5
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+                osc.start(now);
+                osc.stop(now + 0.4);
+            } else if (type === 'wrong') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(200, now);
+                osc.frequency.setValueAtTime(140, now + 0.15);
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+                osc.start(now);
+                osc.stop(now + 0.35);
+            } else if (type === 'win') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(440, now);
+                osc.frequency.setValueAtTime(554.37, now + 0.15);
+                osc.frequency.setValueAtTime(659.25, now + 0.3);
+                osc.frequency.setValueAtTime(880, now + 0.45);
+                gain.gain.setValueAtTime(0.4, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.8);
+                osc.start(now);
+                osc.stop(now + 0.8);
+            }
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            const icon = document.getElementById('sound-icon');
+            if (soundEnabled) {
+                icon.className = "fa-solid fa-volume-high";
+            } else {
+                icon.className = "fa-solid fa-volume-xmark text-red-500";
+            }
+        }
+
+        // Bắt đầu game
+        function startGame() {
+            const inputName = document.getElementById('player-name').value.trim();
+            playerName = inputName || "Học Sinh Lớp 5";
+            
+            // Reset biến
+            score = 0;
+            lives = 3;
+            combo = 0;
+            currentIndex = 0;
+
+            // Xáo trộn câu hỏi
+            currentQuestions = [...questionBank].sort(() => Math.random() - 0.5);
+
+            // Cập nhật giao diện
+            document.getElementById('screen-start').classList.add('hidden');
+            document.getElementById('screen-end').classList.add('hidden');
+            document.getElementById('screen-game').classList.remove('hidden');
+            document.getElementById('hud').classList.remove('hidden');
+            document.getElementById('hud').classList.add('flex');
+
+            updateHUD();
+            loadQuestion();
+        }
+
+        function updateHUD() {
+            document.getElementById('lives-count').textContent = lives;
+            document.getElementById('score').textContent = score;
+            document.getElementById('progress-text').textContent = `Câu ${currentIndex + 1}/${currentQuestions.length}`;
+            
+            // Thanh tiến trình
+            const percent = ((currentIndex) / currentQuestions.length) * 100;
+            document.getElementById('progress-bar').style.width = `${percent}%`;
+
+            // Trạm thử thách
+            const q = currentQuestions[currentIndex];
+            if (q) {
+                document.getElementById('stage-title').textContent = q.category;
+            }
+
+            // Combo badge
+            const comboBadge = document.getElementById('combo-badge');
+            if (combo >= 2) {
+                comboBadge.classList.remove('hidden');
+                document.getElementById('combo-count').textContent = combo;
+            } else {
+                comboBadge.classList.add('hidden');
+            }
+        }
+
+
         // Hiển thị câu hỏi dạng image-click theo đúng tỉ lệ ảnh trên mọi thiết bị.
         function renderImageClickQuestion(q) {
             const optionsContainer = document.getElementById('options-container');
@@ -320,22 +848,203 @@ helper = r"""
             handleResult(true, q.explain);
         }
 
-"""
-text = text.replace(marker, helper + marker, 1)
+        function loadQuestion() {
+            const q = currentQuestions[currentIndex];
+            document.getElementById('question-category').querySelector('span').textContent = q.category;
+            document.getElementById('question-text').textContent = q.text;
 
-# Modify loadQuestion branch so image-click is handled separately.
-old = """            if (q.type === 'binary') {
-                optionsContainer.classList.add('hidden');
-                binaryContainer.classList.remove('hidden');"""
-new = """            if (q.type === 'image-click') {
+            // An hien khung phan hoi
+            document.getElementById('feedback-card').classList.add('hidden');
+
+            const optionsContainer = document.getElementById('options-container');
+            const binaryContainer = document.getElementById('binary-container');
+
+            if (q.type === 'image-click') {
                 binaryContainer.classList.add('hidden');
                 renderImageClickQuestion(q);
             } else if (q.type === 'binary') {
                 optionsContainer.classList.add('hidden');
-                binaryContainer.classList.remove('hidden');"""
-text = text.replace(old, new, 1)
+                binaryContainer.classList.remove('hidden');
 
-# Save edited file.
-out = Path("/mnt/data/Hanh_Trinh_Dung_Si_Tin_Hoc_Lop_5_responsive.html")
-out.write_text(text, encoding="utf-8")
-print(f"Đã tạo file: {out}")
+                const binaryItems = document.getElementById('binary-items');
+                binaryItems.innerHTML = '';
+
+                q.items.forEach((item, idx) => {
+                    const row = document.createElement('div');
+                    row.className = "flex items-center justify-between bg-slate-50 p-3 rounded-xl border border-slate-200";
+                    row.innerHTML = `
+                        <span class="font-bold text-slate-800 text-sm sm:text-base">${idx + 1}. ${item.label}</span>
+                        <div class="flex gap-2">
+                            <button type="button" onclick="selectBinary(${idx}, true)" id="bin-yes-${idx}" class="bin-btn-${idx} px-3 py-1.5 rounded-lg border-2 border-emerald-500 font-extrabold text-emerald-700 bg-white">CÓ</button>
+                            <button type="button" onclick="selectBinary(${idx}, false)" id="bin-no-${idx}" class="bin-btn-${idx} px-3 py-1.5 rounded-lg border-2 border-red-400 font-extrabold text-red-600 bg-white">KHÔNG</button>
+                        </div>
+                    `;
+                    binaryItems.appendChild(row);
+                });
+                q.userAnswers = Array(q.items.length).fill(null);
+            } else {
+                binaryContainer.classList.add('hidden');
+                optionsContainer.classList.remove('hidden');
+                optionsContainer.innerHTML = '';
+
+                const labels = ['A', 'B', 'C', 'D'];
+                q.options.forEach((opt, idx) => {
+                    const btn = document.createElement('button');
+                    btn.className = "btn-game bg-white hover:bg-indigo-50 text-slate-800 font-bold p-4 rounded-2xl border-2 border-indigo-200 text-left flex items-start gap-3 w-full transition";
+                    btn.onclick = () => checkAnswer(idx);
+                    btn.innerHTML = `
+                        <span class="bg-indigo-600 text-white font-black w-7 h-7 rounded-lg flex items-center justify-center text-sm flex-shrink-0 mt-0.5">${labels[idx]}</span>
+                        <span class="text-sm sm:text-base leading-snug">${opt}</span>
+                    `;
+                    optionsContainer.appendChild(btn);
+                });
+            }
+
+            updateHUD();
+        }
+
+        function selectBinary(itemIdx, value) {
+            const q = currentQuestions[currentIndex];
+            q.userAnswers[itemIdx] = value;
+
+            const yesBtn = document.getElementById(`bin-yes-${itemIdx}`);
+            const noBtn = document.getElementById(`bin-no-${itemIdx}`);
+
+            if (value) {
+                yesBtn.className = "px-3 py-1.5 rounded-lg border-2 border-emerald-600 font-extrabold text-white bg-emerald-500 shadow";
+                noBtn.className = "px-3 py-1.5 rounded-lg border-2 border-slate-200 font-extrabold text-slate-400 bg-slate-100";
+            } else {
+                yesBtn.className = "px-3 py-1.5 rounded-lg border-2 border-slate-200 font-extrabold text-slate-400 bg-slate-100";
+                noBtn.className = "px-3 py-1.5 rounded-lg border-2 border-red-600 font-extrabold text-white bg-red-500 shadow";
+            }
+        }
+
+        function submitBinaryAnswer() {
+            const q = currentQuestions[currentIndex];
+            if (q.userAnswers.includes(null)) {
+                alert("Em hãy chọn CÓ hoặc KHÔNG cho tất cả các ý nhé!");
+                return;
+            }
+
+            let isAllCorrect = true;
+            q.items.forEach((item, idx) => {
+                if (q.userAnswers[idx] !== item.correct) isAllCorrect = false;
+            });
+
+            handleResult(isAllCorrect, q.explain);
+        }
+
+        function checkAnswer(selectedIndex) {
+            const q = currentQuestions[currentIndex];
+            const isCorrect = (selectedIndex === q.correct);
+            
+            // Disable buttons
+            const buttons = document.getElementById('options-container').querySelectorAll('button');
+            buttons.forEach((btn, idx) => {
+                btn.onclick = null;
+                if (idx === q.correct) {
+                    btn.className = "bg-emerald-100 text-emerald-950 font-bold p-4 rounded-2xl border-2 border-emerald-500 text-left flex items-start gap-3 w-full shadow";
+                } else if (idx === selectedIndex) {
+                    btn.className = "bg-red-100 text-red-950 font-bold p-4 rounded-2xl border-2 border-red-400 text-left flex items-start gap-3 w-full opacity-80";
+                }
+            });
+
+            handleResult(isCorrect, q.explain);
+        }
+
+        function handleResult(isCorrect, explainText) {
+            const feedbackCard = document.getElementById('feedback-card');
+            const feedbackTitle = document.getElementById('feedback-title');
+            const feedbackText = document.getElementById('feedback-text');
+            const feedbackIcon = document.getElementById('feedback-icon');
+
+            feedbackCard.classList.remove('hidden');
+
+            if (isCorrect) {
+                playSound('correct');
+                combo++;
+                const bonus = combo > 1 ? combo * 10 : 0;
+                score += (100 + bonus);
+
+                feedbackCard.className = "rounded-2xl p-4 sm:p-5 mb-4 border-2 bg-emerald-50 border-emerald-300 text-emerald-950";
+                feedbackIcon.innerHTML = "🎉";
+                feedbackTitle.textContent = "Chính xác! Xuất sắc lắm!";
+                feedbackText.innerHTML = `<b>Giải thích:</b> ${explainText}`;
+            } else {
+                playSound('wrong');
+                combo = 0;
+                lives--;
+
+                feedbackCard.className = "rounded-2xl p-4 sm:p-5 mb-4 border-2 bg-red-50 border-red-300 text-red-950";
+                feedbackIcon.innerHTML = "💡";
+                feedbackTitle.textContent = "Chưa chính xác rồi! Đừng lo lắng nhé!";
+                feedbackText.innerHTML = `<b>Giải thích đáp án đúng:</b> ${explainText}`;
+            }
+
+            updateHUD();
+
+            if (lives <= 0) {
+                setTimeout(endGame, 1500);
+            }
+        }
+
+        function nextQuestion() {
+            currentIndex++;
+            if (currentIndex < currentQuestions.length && lives > 0) {
+                loadQuestion();
+            } else {
+                endGame();
+            }
+        }
+
+        function endGame() {
+            document.getElementById('screen-game').classList.add('hidden');
+            document.getElementById('hud').classList.add('hidden');
+            document.getElementById('hud').classList.remove('flex');
+            document.getElementById('screen-end').classList.remove('hidden');
+
+            const endHeader = document.getElementById('end-header');
+            const certName = document.getElementById('cert-name');
+            const certScore = document.getElementById('cert-score');
+            const certRank = document.getElementById('cert-rank');
+            const certMessage = document.getElementById('cert-message');
+
+            certName.textContent = playerName;
+            certScore.textContent = score;
+
+            if (lives > 0) {
+                playSound('win');
+                endHeader.innerHTML = `
+                    <div class="text-6xl mb-2">🏆</div>
+                    <h2 class="text-3xl font-black text-indigo-950">CHÚC MỪNG EM ĐÃ HOÀN THÀNH!</h2>
+                    <p class="text-slate-600 font-bold">Em đã chinh phục thành công Hành Trình Dũng Sĩ Tin Học!</p>
+                `;
+
+                if (score >= 1800) {
+                    certRank.textContent = "Dũng Sĩ Tối Cao 🌟";
+                    certRank.className = "text-lg font-black text-amber-600";
+                    certMessage.textContent = "Em có kiến thức Tin học xuất sắc và phản xạ vô cùng tuyệt vời!";
+                } else {
+                    certRank.textContent = "Dũng Sĩ Tích Cực ⭐";
+                    certRank.className = "text-lg font-black text-emerald-600";
+                    certMessage.textContent = "Em đã nắm rất tốt các kiến thức Tin học cơ bản của Chủ đề 1!";
+                }
+            } else {
+                endHeader.innerHTML = `
+                    <div class="text-6xl mb-2">💪</div>
+                    <h2 class="text-3xl font-black text-indigo-950">HẾT MẠNG RỒI! CỐ LÊN NHÉ!</h2>
+                    <p class="text-slate-600 font-bold">Đừng nản lòng, hãy thử lại để đạt điểm cao hơn nhé!</p>
+                `;
+                certRank.textContent = "Chiến Binh Cố Gắng 🎈";
+                certRank.className = "text-lg font-black text-indigo-600";
+                certMessage.textContent = "Hãy ôn lại các câu chưa đúng và thử lại lượt chơi mới nhé!";
+            }
+        }
+
+        function restartGame() {
+            document.getElementById('screen-end').classList.add('hidden');
+            document.getElementById('screen-start').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
