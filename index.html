@@ -191,12 +191,9 @@
                 </div>
             </div>
 
-            <div class="flex flex-wrap justify-center gap-4">
+            <div class="flex flex-wrap justify-center">
                 <button onclick="restartGame()" class="btn-game bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold px-8 py-3.5 rounded-2xl text-lg inline-flex items-center gap-2">
                     <i class="fa-solid fa-rotate-left"></i> CHƠI LẠI TỪ ĐẦU
-                </button>
-                <button onclick="window.print()" class="btn-game bg-slate-700 hover:bg-slate-800 text-white font-extrabold px-6 py-3.5 rounded-2xl text-lg inline-flex items-center gap-2">
-                    <i class="fa-solid fa-print"></i> IN GIẤY KHEN
                 </button>
             </div>
         </div>
@@ -208,7 +205,7 @@
         const questionBank = [
     {
         category: "Trạm 1: Internet & Mạng Toàn Cầu",
-        text: "Câu 1: Em hãy cho biết, Internet là gì?",
+        text: "Em hãy cho biết, Internet là gì?",
         options: [
             "Một thiết bị để thực hiện cuộc gọi điện thoại",
             "Một trình duyệt Web",
@@ -220,7 +217,7 @@
     },
     {
         category: "Trạm 1: Internet & Mạng Toàn Cầu",
-        text: "Câu 2: Em hãy cho biết, giao thức nào đảm bảo kết nối an toàn và được mã hóa giữa trình duyệt Web và trang Web?",
+        text: "Em hãy cho biết, giao thức nào đảm bảo kết nối an toàn và được mã hóa giữa trình duyệt Web và trang Web?",
         options: [
             "HTTP",
             "HTTPS",
@@ -233,7 +230,7 @@
     {
         category: "Trạm 1: Internet & Mạng Toàn Cầu",
         type: "binary",
-        text: "Câu 3: Em hãy chọn CÓ nếu tùy chọn là thành phần của URL và chọn KHÔNG nếu không phải:",
+        text: "Em hãy chọn CÓ nếu tùy chọn là thành phần của URL và chọn KHÔNG nếu không phải:",
         items: [
             { label: "Giao thức (Protocol)", correct: true },
             { label: "Tên miền (Domain Name)", correct: true },
@@ -245,7 +242,7 @@
     {
         category: "Trạm 1: Internet & Mạng Toàn Cầu",
         type: "binary",
-        text: "Câu 4: Những bước nào liên quan đến việc lấy thông tin trực tuyến? Chọn CÓ nếu là bước bắt buộc và KHÔNG nếu không phải:",
+        text: "Những bước nào liên quan đến việc lấy thông tin trực tuyến? Chọn CÓ nếu là bước bắt buộc và KHÔNG nếu không phải:",
         items: [
             { label: "Nhập URL", correct: true },
             { label: "Khởi động lại thiết bị", correct: false },
@@ -256,7 +253,7 @@
     },
     {
         category: "Trạm 2: Địa Chỉ IP & Tiếp Cận Công Nghệ",
-        text: "Câu 5: Em hãy cho biết, tùy chọn nào là đúng khi nói về Khả năng tiếp cận công nghệ (Accessibility)?",
+        text: "Em hãy cho biết, tùy chọn nào là đúng khi nói về Khả năng tiếp cận công nghệ (Accessibility)?",
         options: [
             "Sự dễ dàng sử dụng và sẵn có của công nghệ dành cho người khuyết tật",
             "Khả năng kết nối với mạng",
@@ -269,7 +266,7 @@
     {
         category: "Trạm 2: Địa Chỉ IP & Tiếp Cận Công Nghệ",
         type: "binary",
-        text: "Câu 6: Chọn CÓ nếu là tùy chọn để khắc phục sự cố cơ bản trong công nghệ và KHÔNG nếu không phải:",
+        text: "Chọn CÓ nếu là tùy chọn để khắc phục sự cố cơ bản trong công nghệ và KHÔNG nếu không phải:",
         items: [
             { label: "Khởi động lại thiết bị", correct: true },
             { label: "Ngắt kết nối nguồn điện khỏi tòa nhà chính", correct: false },
@@ -280,7 +277,7 @@
     },
     {
         category: "Trạm 2: Địa Chỉ IP & Tiếp Cận Công Nghệ",
-        text: "Câu 7: Em hãy cho biết, mục đích của địa chỉ IP (Internet Protocol) là gì?",
+        text: "Em hãy cho biết, mục đích của địa chỉ IP (Internet Protocol) là gì?",
         options: [
             "Gửi và nhận Email",
             "Xác định vị trí địa chỉ vật lí của trang Web",
@@ -292,7 +289,7 @@
     },
     {
         category: "Trạm 2: Địa Chỉ IP & Tiếp Cận Công Nghệ",
-        text: "Câu 8: Em hãy cho biết, mục đích chính của địa chỉ IP đối với tài nguyên mạng là gì?",
+        text: "Em hãy cho biết, mục đích chính của địa chỉ IP đối với tài nguyên mạng là gì?",
         options: [
             "Chơi các tập tin âm nhạc",
             "Gửi và nhận Email",
@@ -304,7 +301,7 @@
     },
     {
         category: "Trạm 3: Sửa Lỗi Thiết Bị & Khắc Phục Sự Cố",
-        text: "Câu 9: Em không kết nối được với Internet ở nhà mình, không ai khác trong nhà gặp vấn đề này. Em nên làm gì trước tiên?",
+        text: "Em không kết nối được với Internet ở nhà mình, không ai khác trong nhà gặp vấn đề này. Em nên làm gì trước tiên?",
         options: [
             "Thay Pin cho thiết bị của em",
             "Tắt hoặc vô hiệu hóa Bluetooth trên thiết bị của em",
@@ -316,7 +313,7 @@
     },
     {
         category: "Trạm 3: Sửa Lỗi Thiết Bị & Khắc Phục Sự Cố",
-        text: "Câu 10: Em hãy hoàn thành phát biểu: '___________ giao tiếp là một bộ quy tắc được các máy tính sử dụng để giao tiếp với nhau.'",
+        text: "Em hãy hoàn thành phát biểu: '___________ giao tiếp là một bộ quy tắc được các máy tính sử dụng để giao tiếp với nhau.'",
         options: [
             "Giao thức (Protocol)",
             "Mạng (Network)",
@@ -328,7 +325,7 @@
     },
     {
         category: "Trạm 3: Sửa Lỗi Thiết Bị & Khắc Phục Sự Cố",
-        text: "Câu 11: Em hãy cho biết, bước khắc phục sự cố cơ bản cần thử trên thiết bị âm thanh không hoạt động là gì?",
+        text: "Em hãy cho biết, bước khắc phục sự cố cơ bản cần thử trên thiết bị âm thanh không hoạt động là gì?",
         options: [
             "Điều chỉnh độ sáng màn hình",
             "Kiểm tra các điều khiển âm lượng",
@@ -340,7 +337,7 @@
     },
     {
         category: "Trạm 4: Lưu Trữ & Tên Miền Web",
-        text: "Câu 12: Em hãy cho biết, USB Drive dùng để làm gì?",
+        text: "Em hãy cho biết, USB Drive dùng để làm gì?",
         options: [
             "Chụp ảnh",
             "Gửi và nhận tin nhắn SMS",
@@ -352,7 +349,7 @@
     },
     {
         category: "Trạm 4: Lưu Trữ & Tên Miền Web",
-        text: "Câu 13: Em tin tưởng tên miền nào nhất khi tìm kiếm thông tin cập nhật về du lịch nước ngoài?",
+        text: "Em tin tưởng tên miền nào nhất khi tìm kiếm thông tin cập nhật về du lịch nước ngoài?",
         options: [
             ".xyz",
             ".net",
@@ -364,7 +361,7 @@
     },
     {
         category: "Trạm 4: Lưu Trữ & Tên Miền Web",
-        text: "Câu 14: Em hãy cho biết, lợi ích chính của việc lưu trữ đám mây là gì?",
+        text: "Em hãy cho biết, lợi ích chính của việc lưu trữ đám mây là gì?",
         options: [
             "Thông tin chỉ có thể được truy cập bởi một thiết bị tại một thời điểm",
             "Bất kì ai cũng có thể truy cập tập tin mà không cần xin phép",
@@ -376,7 +373,7 @@
     },
     {
         category: "Trạm 4: Lưu Trữ & Tên Miền Web",
-        text: "Câu 15: Em hãy cho biết, tùy chọn nào dưới đây KHÔNG phải là một phần cấu tạo nằm trong URL?",
+        text: "Em hãy cho biết, tùy chọn nào dưới đây KHÔNG phải là một phần cấu tạo nằm trong URL?",
         options: [
             "Địa chỉ IP (IP Address)",
             "Tên miền (Domain Name)",
