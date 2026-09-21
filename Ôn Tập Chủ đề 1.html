@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hành Trình Dũng Sĩ Tin Học Lớp 5</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Nunito', sans-serif;
+            user-select: none;
+        }
+        .bg-pattern {
+            background-color: #4f46e5;
+            background-image: radial-gradient(#6366f1 2px, transparent 2px), radial-gradient(#6366f1 2px, #4f46e5 2px);
+            background-size: 80px 80px;
+            background-position: 0 0, 40px 40px;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 4px solid #312e81;
+            box-shadow: 0 10px 0px #1e1b4b;
+        }
+        .btn-game {
+            transition: all 0.1s ease;
+            box-shadow: 0 6px 0px rgba(0,0,0,0.2);
+        }
+        .btn-game:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 0px rgba(0,0,0,0.2);
+        }
+        .btn-game:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0px rgba(0,0,0,0.2);
+        }
+        .bounce-anim {
+            animation: bounce 2s infinite;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        .pulse-glow {
+            animation: pulse-glow 1.5s infinite alternate;
+        }
+        @keyframes pulse-glow {
+            from { box-shadow: 0 0 10px #fbbf24, 0 0 20px #fbbf24; }
+            to { box-shadow: 0 0 20px #f59e0b, 0 0 35px #f59e0b; }
+        }
+    </style>
+</head>
+<body class="bg-pattern min-h-screen flex items-center justify-center p-2 sm:p-4 text-slate-800">
+
+    <!-- CONTAINER CHÍNH -->
+    <div class="w-full max-w-4xl glass-card rounded-3xl p-4 sm:p-8 relative overflow-hidden">
+        
+        <!-- HEADER / THANH TRẠNG THÁI (HUD) -->
+        <div id="hud" class="hidden flex-wrap justify-between items-center bg-indigo-100 p-3 sm:p-4 rounded-2xl mb-6 border-2 border-indigo-300 gap-2">
+            <div class="flex items-center gap-3">
+                <div class="bg-red-500 text-white font-extrabold px-3 py-1.5 rounded-xl shadow flex items-center gap-1.5 text-base sm:text-lg">
+                    <i class="fa-solid fa-heart text-white text-xl"></i>
+                    <span id="lives-count">3</span>
+                </div>
+                <div class="bg-amber-400 text-amber-950 font-black px-3 py-1.5 rounded-xl shadow flex items-center gap-1 text-base sm:text-lg">
+                    <i class="fa-solid fa-star text-amber-100"></i>
+                    <span id="score">0</span>
+                </div>
+                <div id="combo-badge" class="hidden bg-purple-600 text-white font-extrabold px-3 py-1 rounded-xl shadow animate-bounce text-sm sm:text-base">
+                    ⚡ Combo x<span id="combo-count">1</span>!
+                </div>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <div class="text-right">
+                    <div class="text-xs font-bold text-indigo-700 uppercase tracking-wider" id="stage-title">Trạm 1/4</div>
+                    <div class="text-sm font-extrabold text-indigo-950" id="progress-text">Câu 1/20</div>
+                </div>
+                <button id="sound-btn" onclick="toggleSound()" class="w-10 h-10 bg-indigo-200 hover:bg-indigo-300 rounded-xl flex items-center justify-center text-indigo-800 text-lg transition">
+                    <i class="fa-solid fa-volume-high" id="sound-icon"></i>
+                </button>
+            </div>
+            
+            <!-- Thanh tiến trình (Progress Bar) -->
+            <div class="w-full bg-indigo-200 h-3 rounded-full overflow-hidden mt-2 border border-indigo-300">
+                <div id="progress-bar" class="bg-gradient-to-r from-emerald-400 to-green-500 h-full w-0 transition-all duration-300"></div>
+            </div>
+        </div>
+
+        <!-- MAN HINH 1: BẮT ĐẦU (START SCREEN) -->
+        <div id="screen-start" class="text-center py-6">
+            <div class="inline-block bg-yellow-300 text-yellow-950 font-black px-4 py-1.5 rounded-full text-sm uppercase tracking-widest mb-3 border-2 border-yellow-500 shadow-sm">
+                Ôn Tập Tin Học Lớp 5 - Chủ Đề 1
+            </div>
+            <h1 class="text-3xl sm:text-5xl font-black text-indigo-950 mb-4 leading-tight">
+                HÀNH TRÌNH DŨNG SĨ<br><span class="text-indigo-600">THẾ GIỚI SỐ</span> 🚀
+            </h1>
+            
+            <div class="flex justify-center mb-6">
+                <div class="relative w-36 h-36 sm:w-44 sm:h-44 bg-indigo-100 rounded-full flex items-center justify-center border-4 border-indigo-400 shadow-inner bounce-anim">
+                    <i class="fa-solid fa-robot text-7xl sm:text-8xl text-indigo-600"></i>
+                    <div class="absolute -bottom-2 bg-indigo-900 text-white text-xs font-bold px-3 py-1 rounded-full">Robo-Guide</div>
+                </div>
+            </div>
+
+            <p class="text-slate-600 text-base sm:text-lg mb-6 max-w-lg mx-auto font-semibold">
+                Chào mừng em đến với hành trình ôn tập! Hãy vượt qua 4 trạm thử thách để thu thập sao và trở thành <strong class="text-indigo-700">Dũng Sĩ Tin Học</strong> nhé!
+            </p>
+
+            <div class="max-w-md mx-auto mb-6">
+                <input type="text" id="player-name" placeholder="Nhập tên của em ở đây..." class="w-full px-5 py-3 rounded-2xl border-3 border-indigo-300 text-center text-lg font-bold text-indigo-950 focus:outline-none focus:border-indigo-600 bg-indigo-50/50 shadow-inner">
+            </div>
+
+            <button onclick="startGame()" class="btn-game bg-emerald-500 hover:bg-emerald-600 text-white font-black text-xl sm:text-2xl px-10 py-4 rounded-2xl cursor-pointer pulse-glow uppercase tracking-wider inline-flex items-center gap-3">
+                <i class="fa-solid fa-play"></i> BẮT ĐẦU CHƠI NGAY!
+            </button>
+        </div>
+
+        <!-- MAN HINH 2: CHƠI GAME (GAMEPLAY SCREEN) -->
+        <div id="screen-game" class="hidden">
+            <!-- Thẻ câu hỏi -->
+            <div class="bg-indigo-50 border-2 border-indigo-200 rounded-2xl p-5 sm:p-6 mb-6 shadow-sm">
+                <div class="flex items-center gap-2 text-indigo-600 font-bold text-sm mb-2" id="question-category">
+                    <i class="fa-solid fa-layer-group"></i> <span>Chủ đề</span>
+                </div>
+                <h2 id="question-text" class="text-lg sm:text-2xl font-black text-slate-800 leading-snug">
+                    Nội dung câu hỏi sẽ hiển thị ở đây...
+                </h2>
+            </div>
+
+            <!-- Các lựa chọn đáp án (Trắc nghiệm A, B, C, D) -->
+            <div id="options-container" class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-6">
+                <!-- Javascript sẽ render câu trả lời vào đây -->
+            </div>
+
+            <!-- Dạng bài đúng/sai (Khảo sát Tính năng) -->
+            <div id="binary-container" class="hidden bg-white border-2 border-slate-200 rounded-2xl p-4 mb-6">
+                <div class="text-center font-bold text-slate-700 mb-4 text-base sm:text-lg">Đánh giá từng tính năng bên dưới:</div>
+                <div id="binary-items" class="space-y-3">
+                    <!-- Dynamic Binary Rows -->
+                </div>
+                <button onclick="submitBinaryAnswer()" class="btn-game w-full mt-4 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold py-3 rounded-xl text-lg">
+                    XÁC NHẬN ĐÁP ÁN
+                </button>
+            </div>
+
+            <!-- Khung Giải Thích / Phản Hồi Kết Quả -->
+            <div id="feedback-card" class="hidden rounded-2xl p-4 sm:p-5 mb-4 border-2">
+                <div class="flex items-start gap-3">
+                    <div id="feedback-icon" class="text-3xl"></div>
+                    <div>
+                        <h4 id="feedback-title" class="font-black text-lg"></h4>
+                        <p id="feedback-text" class="text-sm sm:text-base font-semibold mt-1"></p>
+                    </div>
+                </div>
+                <button onclick="nextQuestion()" class="btn-game mt-4 bg-indigo-900 hover:bg-slate-800 text-white font-extrabold px-6 py-2.5 rounded-xl text-base float-right">
+                    Câu Tiếp Theo <i class="fa-solid fa-arrow-right ml-1"></i>
+                </button>
+                <div class="clear-both"></div>
+            </div>
+        </div>
+
+        <!-- MAN HINH 3: KẾT THÚC & GIẤY KHEN (VICTORY / GAMEOVER SCREEN) -->
+        <div id="screen-end" class="hidden text-center py-6">
+            <div id="end-header"></div>
+
+            <!-- Giấy khen điện tử -->
+            <div class="bg-amber-50 border-4 border-amber-400 rounded-3xl p-6 sm:p-8 my-6 relative shadow-lg max-w-xl mx-auto text-left">
+                <div class="absolute top-3 right-4 text-amber-300 text-5xl opacity-40"><i class="fa-solid fa-award"></i></div>
+                <div class="text-center border-b-2 border-amber-200 pb-4 mb-4">
+                    <div class="text-amber-800 font-extrabold text-xs uppercase tracking-widest">CHỨNG NHẬN HOÀN THÀNH</div>
+                    <h3 class="text-2xl sm:text-3xl font-black text-amber-900">DŨNG SĨ TIN HỌC LỚP 5</h3>
+                </div>
+
+                <div class="space-y-3 font-semibold text-slate-700">
+                    <p>Trao tặng cho học sinh: <span id="cert-name" class="font-black text-indigo-950 text-xl underline decoration-amber-400">...</span></p>
+                    <p>Đã xuất sắc đạt thành tích ôn tập:</p>
+                    <div class="grid grid-cols-2 gap-3 text-center my-3">
+                        <div class="bg-amber-100/70 p-3 rounded-xl border border-amber-300">
+                            <div class="text-xs text-amber-800 font-bold">Tổng Điểm</div>
+                            <div id="cert-score" class="text-2xl font-black text-amber-900">0</div>
+                        </div>
+                        <div class="bg-amber-100/70 p-3 rounded-xl border border-amber-300">
+                            <div class="text-xs text-amber-800 font-bold">Đánh Giá</div>
+                            <div id="cert-rank" class="text-lg font-black text-emerald-700">Xuất Sắc</div>
+                        </div>
+                    </div>
+                    <p id="cert-message" class="text-sm italic text-slate-600 text-center">"Em đã nắm vững toàn bộ kiến thức Tin học Chủ đề 1!"</p>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap justify-center gap-4">
+                <button onclick="restartGame()" class="btn-game bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold px-8 py-3.5 rounded-2xl text-lg inline-flex items-center gap-2">
+                    <i class="fa-solid fa-rotate-left"></i> CHƠI LẠI TỪ ĐẦU
+                </button>
+                <button onclick="window.print()" class="btn-game bg-slate-700 hover:bg-slate-800 text-white font-extrabold px-6 py-3.5 rounded-2xl text-lg inline-flex items-center gap-2">
+                    <i class="fa-solid fa-print"></i> IN GIẤY KHEN
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- NGÂN HÀNG CÂU HỎI 30 CÂU TÍCH HỢP AI & TIN HỌC LỚP 5 ---
+        const questionBank = [
+            // ==================== TRẠM 1: LƯU TRỮ & THIẾT BỊ ====================
+            {
+                category: "Trạm 1: Lưu Trữ & Thiết Bị",
+                text: "Em hãy cho biết, lợi ích chính của việc lưu trữ đám mây (Cloud Storage) là gì?",
+                options: [
+                    "Bản in trên giấy của tài liệu được tự động tạo ra.",
+                    "Thông tin chỉ có thể truy cập bởi 1 thiết bị duy nhất.",
+                    "Dữ liệu được tự động đồng bộ hóa trên tất cả các thiết bị.",
+                    "Bất kỳ ai cũng có thể mở tập tin mà không cần xin phép."
+                ],
+                correct: 2,
+                explain: "Lưu trữ đám mây giúp dữ liệu tự động đồng bộ hóa trên mọi thiết bị (máy tính, điện thoại, máy tính bảng) khi có kết nối Internet."
+            },
+            {
+                category: "Trạm 1: Lưu Trữ & Thiết Bị",
+                text: "Thiết bị USB Drive được dùng để làm gì?",
+                options: [
+                    "Chơi game 3D đồ họa cao.",
+                    "Gửi và nhận tin nhắn SMS.",
+                    "Lưu trữ và truyền dữ liệu giữa các máy tính.",
+                    "Chụp ảnh và quay video."
+                ],
+                correct: 2,
+                explain: "USB Drive là thiết bị lưu trữ di động nhỏ gọn dùng để lưu trữ và sao chép/truyền tập tin giữa các máy tính."
+            },
+            {
+                category: "Trạm 1: Lưu Trữ & Thiết Bị",
+                text: "Tùy chọn nào dưới đây mô tả chính xác nhất về USB Drive?",
+                options: [
+                    "Một thiết bị lưu trữ phần cứng dạng cắm (cổng USB).",
+                    "Một cơ sở dữ liệu lưu trữ trực tuyến.",
+                    "Một thiết bị nhớ hoạt động trên đám mây.",
+                    "Một không gian lưu trữ trên ổ cứng máy tính."
+                ],
+                correct: 0,
+                explain: "USB Drive là một thiết bị phần cứng được cắm trực tiếp vào cổng USB của máy tính."
+            },
+            {
+                category: "Trạm 1: Lưu Trữ & Thiết Bị",
+                type: "binary",
+                text: "Đánh giá các tính năng của USB Drive (Chọn CÓ hoặc KHÔNG cho từng ý):",
+                items: [
+                    { label: "Có thể mang theo người dễ dàng", correct: true },
+                    { label: "Cung cấp không gian lưu trữ dữ liệu", correct: true },
+                    { label: "Truyền tải tập tin giữa các máy tính", correct: true },
+                    { label: "Kết nối không dây (Wireless)", correct: false }
+                ],
+                explain: "USB là thiết bị kết nối vật lý qua cổng cắm, KHÔNG hỗ trợ kết nối không dây."
+            },
+            {
+                category: "Trạm 1: Lưu Trữ & Thiết Bị",
+                text: "Em muốn sao chép hình ảnh giữa hai máy tính KHÔNG CÓ KẾT NỐI MẠNG, em nên dùng thiết bị nào?",
+                options: [
+                    "Lưu trữ đám mây (Cloud Storage)",
+                    "USB Drive",
+                    "Gửi qua Email",
+                    "Ổ cứng trực tuyến"
+                ],
+                correct: 1,
+                explain: "Khi không có mạng Internet, USB Drive là thiết bị tối ưu nhất để sao chép dữ liệu trực tiếp giữa 2 máy tính."
+            },
+            {
+                category: "Trạm 1: Lưu Trữ & Thiết Bị",
+                text: "Khi em muốn dữ liệu được sao lưu an toàn bởi một công ty dịch vụ uy tín và truy cập từ xa, em nên chọn:",
+                options: [
+                    "Lưu trữ đám mây (Cloud Storage)",
+                    "Thẻ nhớ SD cắm trong máy",
+                    "Đĩa CD-ROM",
+                    "Ổ cứng di động cắm dây"
+                ],
+                correct: 0,
+                explain: "Lưu trữ đám mây cho phép nhà cung cấp dịch vụ quản lý, sao lưu an toàn và truy cập mọi lúc mọi nơi qua mạng."
+            },
+            {
+                category: "Trạm 1: Lưu Trữ & Thiết Bị",
+                text: "Lợi ích của việc sao lưu (Backup) dữ liệu định kỳ là gì?",
+                options: [
+                    "Giúp máy tính chạy nhanh gấp đôi.",
+                    "Tránh mất mát thông tin khi thiết bị gặp sự cố hỏng hóc.",
+                    "Tự động xóa các chương trình vi-rút.",
+                    "Tăng dung lượng pin cho máy tính."
+                ],
+                correct: 1,
+                explain: "Sao lưu giúp bảo vệ dữ liệu quan trọng, tránh mất mát khi máy tính bị hỏng hoặc lỗi hệ thống."
+            },
+
+            // ==================== TRẠM 2: INTERNET & ĐỊA CHỈ WEB ====================
+            {
+                category: "Trạm 2: Internet & Địa Chỉ Web",
+                text: "Khái niệm 'Internet' được hiểu đúng nhất là gì?",
+                options: [
+                    "Là một trình duyệt Web như Chrome hay Cốc Cốc.",
+                    "Mạng lưới toàn cầu gồm các máy tính và thiết bị được kết nối.",
+                    "Một thiết bị để thực hiện cuộc gọi thoại.",
+                    "Một trang web lưu trữ trò chơi trực tuyến."
+                ],
+                correct: 1,
+                explain: "Internet là mạng lưới toàn cầu kết nối vô số máy tính, điện thoại và thiết bị thông minh với nhau."
+            },
+            {
+                category: "Trạm 2: Internet & Địa Chỉ Web",
+                text: "'Khả năng tiếp cận trong công nghệ' (Accessibility) có nghĩa là gì?",
+                options: [
+                    "Tốc độ đường truyền Internet ở nhà em.",
+                    "Cách dữ liệu được mã hóa để bảo mật.",
+                    "Sự dễ dàng sử dụng và tiếp cận công nghệ dành cho người khuyết tật.",
+                    "Quá trình lưu tập tin lên ổ cứng."
+                ],
+                correct: 2,
+                explain: "Khả năng tiếp cận giúp người khuyết tật (khiếm thị, khiếm thính,...) có thể sử dụng công nghệ một cách thuận tiện."
+            },
+            {
+                category: "Trạm 2: Internet & Địa Chỉ Web",
+                text: "Mục đích chính của địa chỉ IP (Internet Protocol) là gì?",
+                options: [
+                    "Chơi các tệp âm thanh trực tuyến.",
+                    "Xác định các thiết bị hỗ trợ Internet trên mạng máy tính.",
+                    "Tự động gửi email mừng sinh nhật.",
+                    "Hiển thị tên tác giả bài viết."
+                ],
+                correct: 1,
+                explain: "Mỗi thiết bị khi tham gia vào mạng Internet đều được cấp một địa chỉ IP riêng để định danh và nhận/gửi dữ liệu."
+            },
+            {
+                category: "Trạm 2: Internet & Địa Chỉ Web",
+                text: "URL (Uniform Resource Locator) là gì?",
+                options: [
+                    "Địa chỉ của một trang Web.",
+                    "Tên nhà cung cấp dịch vụ Internet.",
+                    "Họ và tên người sở hữu máy tính.",
+                    "Kích thước dung lượng của trang web."
+                ],
+                correct: 0,
+                explain: "URL chính là địa chỉ duy nhất dùng để truy cập một trang Web trên Internet (ví dụ: https://www.google.com)."
+            },
+            {
+                category: "Trạm 2: Internet & Địa Chỉ Web",
+                type: "binary",
+                text: "Xác định các thành phần hợp lệ của một địa chỉ URL chuẩn (Chọn CÓ hoặc KHÔNG):",
+                items: [
+                    { label: "Giao thức (Protocol - như https://)", correct: true },
+                    { label: "Tên miền (Domain Name - như google.com)", correct: true },
+                    { label: "Đường dẫn thư mục/trang (/search)", correct: true },
+                    { label: "Mật khẩu tài khoản người dùng", correct: false }
+                ],
+                explain: "URL bao gồm Giao thức, Tên miền và Đường dẫn, KHÔNG chứa mật khẩu người dùng."
+            },
+            {
+                category: "Trạm 2: Internet & Địa Chỉ Web",
+                text: "Địa chỉ URL nào dưới đây có cấu trúc định dạng ĐÚNG chuẩn?",
+                options: [
+                    "https://.companypro.net/test",
+                    "http://www.companypro/test",
+                    "https://www.companypro.net/test",
+                    "https://www.companypro/net/test"
+                ],
+                correct: 2,
+                explain: "URL chuẩn gồm đầy đủ giao thức (https://), tên miền hợp lệ (www.companypro.net) và đường dẫn (/test)."
+            },
+            {
+                category: "Trạm 2: Internet & Địa Chỉ Web",
+                text: "Em tin tưởng tên miền nào nhất khi tìm kiếm thông tin chính thức từ CHÍNH PHỦ?",
+                options: [
+                    ".net",
+                    ".gov",
+                    ".com",
+                    ".xyz"
+                ],
+                correct: 1,
+                explain: "Tên miền .gov đại diện cho các cơ quan Chính phủ (Government), có độ tin cậy và chính xác cao nhất."
+            },
+            {
+                category: "Trạm 2: Internet & Địa Chỉ Web",
+                text: "Tên miền .org thường đại diện cho loại tổ chức nào trên Internet?",
+                options: [
+                    "Công ty kinh doanh thương mại",
+                    "Trường đại học đào tạo",
+                    "Tổ chức phi lợi nhuận",
+                    "Trang tin tức giải trí"
+                ],
+                correct: 2,
+                explain: "Tên miền .org dành cho các tổ chức (Organization), phổ biến nhất là các tổ chức phi lợi nhuận hoặc xã hội."
+            },
+            {
+                category: "Trạm 2: Internet & Địa Chỉ Web",
+                text: "Để mở thẳng một trang Web, em nên nhập địa chỉ URL vào vị trí nào trên trình duyệt?",
+                options: [
+                    "Thanh địa chỉ (Address Bar) phía trên cùng.",
+                    "Khung chat tin nhắn Gmail.",
+                    "Thanh trạng thái dưới góc màn hình.",
+                    "Khung bình luận trên mạng xã hội."
+                ],
+                correct: 0,
+                explain: "Nhập trực tiếp URL vào Thanh địa chỉ (Address Bar) ở mép trên trình duyệt sẽ đưa em đến thẳng trang web đó."
+            },
+            {
+                category: "Trạm 2: Internet & Địa Chỉ Web",
+                text: "Khái niệm 'Giao thức giao tiếp' (Protocol) trong mạng máy tính có nghĩa là gì?",
+                options: [
+                    "Một phần mềm diệt vi-rút.",
+                    "Bộ quy tắc được các máy tính sử dụng để truyền nhận dữ liệu với nhau.",
+                    "Dây cáp kết nối màn hình.",
+                    "Tên của máy tính trung tâm."
+                ],
+                correct: 1,
+                explain: "Giao thức (Protocol) là quy chuẩn/tập hợp các quy tắc giúp các thiết bị máy tính hiểu và trao đổi thông tin với nhau."
+            },
+            {
+                category: "Trạm 2: Internet & Địa Chỉ Web",
+                type: "binary",
+                text: "Đánh giá các bước liên quan khi mở một trang Web (Chọn CÓ cho bước đúng, KHÔNG cho bước không cần thiết):",
+                items: [
+                    { label: "Nhập địa chỉ URL vào thanh địa chỉ", correct: true },
+                    { label: "Khởi động lại máy tính trước khi duyệt web", correct: false },
+                    { label: "URL được phân giải thành địa chỉ IP", correct: true },
+                    { label: "Máy chủ trả về dữ liệu và hiển thị trang web", correct: true }
+                ],
+                explain: "Duyệt web diễn ra tự động qua phân giải IP và phản hồi từ máy chủ, không cần phải khởi động lại máy!"
+            },
+
+            // ==================== TRẠM 3: CÔNG NGHỆ HIỆN ĐẠI & TRÍ TUỆ NHÂN TẠO (AI) ====================
+            {
+                category: "Trạm 3: Công Nghệ Hiện Đại & AI",
+                text: "Bác tài xế xe buýt muốn tìm đường đi ngắn nhất đến điểm du lịch mới, bác ấy nên dùng công nghệ nào?",
+                options: [
+                    "Đài Radio",
+                    "GPS (Hệ thống định vị toàn cầu)",
+                    "Quả địa cầu nhựa",
+                    "Máy nghe nhạc MP3"
+                ],
+                correct: 1,
+                explain: "GPS (Global Positioning System) định vị vị trí vệ tinh và giúp dẫn đường bản đồ chính xác thời gian thực."
+            },
+            {
+                category: "Trạm 3: Công Nghệ Hiện Đại & AI",
+                text: "Dữ liệu thời gian thực (Real-time data) được hiểu là gì?",
+                options: [
+                    "Dữ liệu được thu thập mỗi tháng một lần.",
+                    "Dữ liệu lịch sử được lưu từ nhiều năm trước.",
+                    "Dữ liệu được tạo và cung cấp ngay lập tức khi sự kiện diễn ra.",
+                    "Dữ liệu bị khóa không thể cập nhật."
+                ],
+                correct: 2,
+                explain: "Dữ liệu thời gian thực được xử lý và cập nhật ngay tức thì (như vị trí xe buýt đang chạy, dự báo thời tiết hiện tại)."
+            },
+            {
+                category: "Trạm 3: Công Nghệ Hiện Đại & AI",
+                text: "Thiết bị nào dưới đây KHÔNG PHẢI là ứng dụng của Trí tuệ nhân tạo / Máy học (Machine Learning)?",
+                options: [
+                    "Xe ô tô tự lái thông minh",
+                    "Hệ thống Nhà thông minh tự bật đèn",
+                    "Quạt máy cơ bấm nút thông thường",
+                    "Robot phục vụ tự động"
+                ],
+                correct: 2,
+                explain: "Quạt máy cơ hoạt động bằng công tắc điện vật lý đơn thuần, không tích hợp chip xử lý thông minh hay AI."
+            },
+            {
+                category: "Trạm 3: Công Nghệ Hiện Đại & AI",
+                type: "binary",
+                text: "Đánh giá các khả năng ứng dụng thực tế của Trí tuệ nhân tạo (AI) và Máy học (Chọn CÓ hoặc KHÔNG):",
+                items: [
+                    { label: "Hỗ trợ y tế chẩn đoán bệnh từ xa thời gian thực", correct: true },
+                    { label: "Giúp công nhân mỏ cập nhật dữ liệu an toàn tức thì", correct: true },
+                    { label: "Gợi ý âm nhạc và sáng tác bài hát mới", correct: true },
+                    { label: "Thay thế hoàn toàn việc ăn uống của con người", correct: false }
+                ],
+                explain: "AI xử lý thông tin, dữ liệu và tự động hóa, nhưng không thể thay thế các nhu cầu sinh học cơ bản của con người."
+            },
+            {
+                category: "Trạm 3: Công Nghệ Hiện Đại & AI",
+                text: "Trong học tập, Trí tuệ nhân tạo (AI) có thể giúp học sinh điều gì?",
+                options: [
+                    "Tự động làm giúp bài tập mà học sinh không cần suy nghĩ.",
+                    "Đề xuất bài tập và lộ trình học cá nhân hóa phù hợp với năng lực.",
+                    "Thay thế hoàn toàn các bạn bè trong lớp.",
+                    "Tăng tốc độ gõ bàn phím vật lý."
+                ],
+                correct: 1,
+                explain: "AI đóng vai trò như trợ lý học tập, phân tích điểm mạnh/yếu để gợi ý bài luyện tập phù hợp nhất cho từng học sinh."
+            },
+            {
+                category: "Trạm 3: Công Nghệ Hiện Đại & AI",
+                text: "Trợ lý ảo AI trên điện thoại (như Google Assistant, Siri) có khả năng làm gì?",
+                options: [
+                    "Nhận diện giọng nói và thực hiện lệnh đặt báo thức, tìm kiếm.",
+                    "Sửa chữa phần cứng điện thoại bị nứt vỡ.",
+                    "Tự động in tài liệu ra giấy mà không cần máy in.",
+                    "Kết nối Internet mà không cần sóng hay cáp."
+                ],
+                correct: 0,
+                explain: "Trợ lý AI sử dụng xử lý ngôn ngữ tự nhiên để hiểu giọng nói con người và thực hiện các tác vụ điều khiển."
+            },
+            {
+                category: "Trạm 3: Công Nghệ Hiện Đại & AI",
+                text: "Công nghệ nhận diện khuôn mặt (Facial Recognition) trên điện thoại là ứng dụng của:",
+                options: [
+                    "Trí tuệ nhân tạo (AI) và Thị giác máy tính.",
+                    "Thiết bị lưu trữ USB.",
+                    "Giao thức mã hóa HTTPS.",
+                    "Bản in giấy truyền thống."
+                ],
+                correct: 0,
+                explain: "Thị giác máy tính kết hợp AI giúp thiết bị nhận diện khuôn mặt người dùng để mở khóa an toàn."
+            },
+
+            // ==================== TRẠM 4: AN TOÀN & KHẮC PHỤC SỰ CỐ ====================
+            {
+                category: "Trạm 4: An Toàn & Khắc Phục Sự Cố",
+                text: "Giao thức nào đảm bảo kết nối AN TOÀN VÀ ĐƯỢC MÃ HÓA giữa trình duyệt và trang Web?",
+                options: [
+                    "FTP",
+                    "HTTP",
+                    "SMTP",
+                    "HTTPS"
+                ],
+                correct: 3,
+                explain: "HTTPS (chữ S là Secure - An toàn) mã hóa dữ liệu truyền đi, bảo vệ mật khẩu và thông tin cá nhân."
+            },
+            {
+                category: "Trạm 4: An Toàn & Khắc Phục Sự Cố",
+                text: "Thuật ngữ 'Cookies' trên trình duyệt web dùng để chỉ điều gì?",
+                options: [
+                    "Tệp dữ liệu nhỏ lưu thông tin đăng nhập và sở thích người dùng.",
+                    "Mảnh bánh kẹo rơi vào bàn phím.",
+                    "Phần mềm độc hại làm hỏng ổ cứng.",
+                    "Hình ảnh quảng cáo hiển thị trên mạng."
+                ],
+                correct: 0,
+                explain: "Cookies là các tệp nhỏ do website ghi lại trên máy tính để ghi nhớ trạng thái đăng nhập hoặc cấu hình của em."
+            },
+            {
+                category: "Trạm 4: An Toàn & Khắc Phục Sự Cố",
+                text: "Khi sử dụng máy tính ở thư viện công cộng, em nên làm gì để bảo vệ thông tin cá nhân?",
+                options: [
+                    "Lưu lại mật khẩu trên trình duyệt.",
+                    "Đăng xuất tất cả tài khoản và sử dụng Chế độ duyệt web riêng tư (Incognito).",
+                    "Để nguyên cửa sổ tài khoản khi đứng dậy ra về.",
+                    "Tải thật nhiều tệp không rõ nguồn gốc."
+                ],
+                correct: 1,
+                explain: "Duyệt web riêng tư và đăng xuất tài khoản giúp ngăn người dùng sau truy cập vào thông tin của em."
+            },
+            {
+                category: "Trạm 4: An Toàn & Khắc Phục Sự Cố",
+                text: "Máy tính của em đột nhiên bị chạy rất chậm, em nên xử lý bước đầu tiên như thế nào?",
+                options: [
+                    "Cài đặt lại toàn bộ hệ điều hành.",
+                    "Đóng bớt các ứng dụng và tab trình duyệt không sử dụng.",
+                    "Rút ngay phích cắm nguồn điện khỏi ổ cắm.",
+                    "Nhấp chuột thật nhanh và liên tục."
+                ],
+                correct: 1,
+                explain: "Đóng ứng dụng thừa giải phóng dung lượng bộ nhớ RAM, giúp máy tính hoạt động mượt mà trở lại."
+            },
+            {
+                category: "Trạm 4: An Toàn & Khắc Phục Sự Cố",
+                text: "Loa máy tính không phát ra âm thanh khi mở video bài học, bước kiểm tra đơn giản đầu tiên là:",
+                options: [
+                    "Thay thế một chiếc máy tính mới.",
+                    "Kiểm tra xem mức âm lượng (Volume) có bị tắt (Mute) hoặc quá nhỏ không.",
+                    "Cài đặt lại trình duyệt Web.",
+                    "Tháo bàn phím ra lau chùi."
+                ],
+                correct: 1,
+                explain: "Luôn kiểm tra các thiết lập đơn giản trước: nút bật/tắt âm lượng và dây cắm tai nghe/loa."
+            },
+            {
+                category: "Trạm 4: An Toàn & Khắc Phục Sự Cố",
+                type: "binary",
+                text: "Đánh giá các thao tác khắc phục sự cố kĩ thuật cơ bản (Chọn CÓ cho cách làm đúng, KHÔNG cho cách không đúng):",
+                items: [
+                    { label: "Khởi động lại (Restart) thiết bị khi gặp lỗi phần mềm", correct: true },
+                    { label: "Ngắt toàn bộ cầu dao điện của nhà trường", correct: false },
+                    { label: "Làm mới / Tải lại (Refresh) trang Web khi bị ngắt kết nối", correct: true },
+                    { label: "Kiểm tra dây cáp mạng và dây nguồn đã cắm chặt chưa", correct: true }
+                ],
+                explain: "Khởi động lại, tải lại trang và kiểm tra dây cắm là 3 bước kiểm tra sự cố căn bản và an toàn nhất."
+            }
+        ];
+
+        // --- BIẾN TRẠNG THÁI GAME ---
+        let currentQuestions = [];
+        let currentIndex = 0;
+        let score = 0;
+        let lives = 3;
+        let combo = 0;
+        let playerName = "";
+        let soundEnabled = true;
+
+        // Web Audio API để tạo âm thanh vui nhộn
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playSound(type) {
+            if (!soundEnabled) return;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            const now = audioCtx.currentTime;
+            if (type === 'correct') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(523.25, now); // C5
+                osc.frequency.setValueAtTime(659.25, now + 0.1); // E5
+                osc.frequency.setValueAtTime(783.99, now + 0.2); // G5
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+                osc.start(now);
+                osc.stop(now + 0.4);
+            } else if (type === 'wrong') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(200, now);
+                osc.frequency.setValueAtTime(140, now + 0.15);
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+                osc.start(now);
+                osc.stop(now + 0.35);
+            } else if (type === 'win') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(440, now);
+                osc.frequency.setValueAtTime(554.37, now + 0.15);
+                osc.frequency.setValueAtTime(659.25, now + 0.3);
+                osc.frequency.setValueAtTime(880, now + 0.45);
+                gain.gain.setValueAtTime(0.4, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.8);
+                osc.start(now);
+                osc.stop(now + 0.8);
+            }
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            const icon = document.getElementById('sound-icon');
+            if (soundEnabled) {
+                icon.className = "fa-solid fa-volume-high";
+            } else {
+                icon.className = "fa-solid fa-volume-xmark text-red-500";
+            }
+        }
+
+        // Bắt đầu game
+        function startGame() {
+            const inputName = document.getElementById('player-name').value.trim();
+            playerName = inputName || "Học Sinh Lớp 5";
+            
+            // Reset biến
+            score = 0;
+            lives = 3;
+            combo = 0;
+            currentIndex = 0;
+
+            // Xáo trộn câu hỏi
+            currentQuestions = [...questionBank].sort(() => Math.random() - 0.5);
+
+            // Cập nhật giao diện
+            document.getElementById('screen-start').classList.add('hidden');
+            document.getElementById('screen-end').classList.add('hidden');
+            document.getElementById('screen-game').classList.remove('hidden');
+            document.getElementById('hud').classList.remove('hidden');
+            document.getElementById('hud').classList.add('flex');
+
+            updateHUD();
+            loadQuestion();
+        }
+
+        function updateHUD() {
+            document.getElementById('lives-count').textContent = lives;
+            document.getElementById('score').textContent = score;
+            document.getElementById('progress-text').textContent = `Câu ${currentIndex + 1}/${currentQuestions.length}`;
+            
+            // Thanh tiến trình
+            const percent = ((currentIndex) / currentQuestions.length) * 100;
+            document.getElementById('progress-bar').style.width = `${percent}%`;
+
+            // Trạm thử thách
+            const q = currentQuestions[currentIndex];
+            if (q) {
+                document.getElementById('stage-title').textContent = q.category;
+            }
+
+            // Combo badge
+            const comboBadge = document.getElementById('combo-badge');
+            if (combo >= 2) {
+                comboBadge.classList.remove('hidden');
+                document.getElementById('combo-count').textContent = combo;
+            } else {
+                comboBadge.classList.add('hidden');
+            }
+        }
+
+        function loadQuestion() {
+            const q = currentQuestions[currentIndex];
+            document.getElementById('question-category').querySelector('span').textContent = q.category;
+            document.getElementById('question-text').textContent = q.text;
+
+            // An hien khung phan hoi
+            document.getElementById('feedback-card').classList.add('hidden');
+
+            const optionsContainer = document.getElementById('options-container');
+            const binaryContainer = document.getElementById('binary-container');
+
+            if (q.type === 'binary') {
+                optionsContainer.classList.add('hidden');
+                binaryContainer.classList.remove('hidden');
+
+                const binaryItems = document.getElementById('binary-items');
+                binaryItems.innerHTML = '';
+
+                q.items.forEach((item, idx) => {
+                    const row = document.createElement('div');
+                    row.className = "flex items-center justify-between bg-slate-50 p-3 rounded-xl border border-slate-200";
+                    row.innerHTML = `
+                        <span class="font-bold text-slate-800 text-sm sm:text-base">${idx + 1}. ${item.label}</span>
+                        <div class="flex gap-2">
+                            <button type="button" onclick="selectBinary(${idx}, true)" id="bin-yes-${idx}" class="bin-btn-${idx} px-3 py-1.5 rounded-lg border-2 border-emerald-500 font-extrabold text-emerald-700 bg-white">CÓ</button>
+                            <button type="button" onclick="selectBinary(${idx}, false)" id="bin-no-${idx}" class="bin-btn-${idx} px-3 py-1.5 rounded-lg border-2 border-red-400 font-extrabold text-red-600 bg-white">KHÔNG</button>
+                        </div>
+                    `;
+                    binaryItems.appendChild(row);
+                });
+                q.userAnswers = Array(q.items.length).fill(null);
+            } else {
+                binaryContainer.classList.add('hidden');
+                optionsContainer.classList.remove('hidden');
+                optionsContainer.innerHTML = '';
+
+                const labels = ['A', 'B', 'C', 'D'];
+                q.options.forEach((opt, idx) => {
+                    const btn = document.createElement('button');
+                    btn.className = "btn-game bg-white hover:bg-indigo-50 text-slate-800 font-bold p-4 rounded-2xl border-2 border-indigo-200 text-left flex items-start gap-3 w-full transition";
+                    btn.onclick = () => checkAnswer(idx);
+                    btn.innerHTML = `
+                        <span class="bg-indigo-600 text-white font-black w-7 h-7 rounded-lg flex items-center justify-center text-sm flex-shrink-0 mt-0.5">${labels[idx]}</span>
+                        <span class="text-sm sm:text-base leading-snug">${opt}</span>
+                    `;
+                    optionsContainer.appendChild(btn);
+                });
+            }
+
+            updateHUD();
+        }
+
+        function selectBinary(itemIdx, value) {
+            const q = currentQuestions[currentIndex];
+            q.userAnswers[itemIdx] = value;
+
+            const yesBtn = document.getElementById(`bin-yes-${itemIdx}`);
+            const noBtn = document.getElementById(`bin-no-${itemIdx}`);
+
+            if (value) {
+                yesBtn.className = "px-3 py-1.5 rounded-lg border-2 border-emerald-600 font-extrabold text-white bg-emerald-500 shadow";
+                noBtn.className = "px-3 py-1.5 rounded-lg border-2 border-slate-200 font-extrabold text-slate-400 bg-slate-100";
+            } else {
+                yesBtn.className = "px-3 py-1.5 rounded-lg border-2 border-slate-200 font-extrabold text-slate-400 bg-slate-100";
+                noBtn.className = "px-3 py-1.5 rounded-lg border-2 border-red-600 font-extrabold text-white bg-red-500 shadow";
+            }
+        }
+
+        function submitBinaryAnswer() {
+            const q = currentQuestions[currentIndex];
+            if (q.userAnswers.includes(null)) {
+                alert("Em hãy chọn CÓ hoặc KHÔNG cho tất cả các ý nhé!");
+                return;
+            }
+
+            let isAllCorrect = true;
+            q.items.forEach((item, idx) => {
+                if (q.userAnswers[idx] !== item.correct) isAllCorrect = false;
+            });
+
+            handleResult(isAllCorrect, q.explain);
+        }
+
+        function checkAnswer(selectedIndex) {
+            const q = currentQuestions[currentIndex];
+            const isCorrect = (selectedIndex === q.correct);
+            
+            // Disable buttons
+            const buttons = document.getElementById('options-container').querySelectorAll('button');
+            buttons.forEach((btn, idx) => {
+                btn.onclick = null;
+                if (idx === q.correct) {
+                    btn.className = "bg-emerald-100 text-emerald-950 font-bold p-4 rounded-2xl border-2 border-emerald-500 text-left flex items-start gap-3 w-full shadow";
+                } else if (idx === selectedIndex) {
+                    btn.className = "bg-red-100 text-red-950 font-bold p-4 rounded-2xl border-2 border-red-400 text-left flex items-start gap-3 w-full opacity-80";
+                }
+            });
+
+            handleResult(isCorrect, q.explain);
+        }
+
+        function handleResult(isCorrect, explainText) {
+            const feedbackCard = document.getElementById('feedback-card');
+            const feedbackTitle = document.getElementById('feedback-title');
+            const feedbackText = document.getElementById('feedback-text');
+            const feedbackIcon = document.getElementById('feedback-icon');
+
+            feedbackCard.classList.remove('hidden');
+
+            if (isCorrect) {
+                playSound('correct');
+                combo++;
+                const bonus = combo > 1 ? combo * 10 : 0;
+                score += (100 + bonus);
+
+                feedbackCard.className = "rounded-2xl p-4 sm:p-5 mb-4 border-2 bg-emerald-50 border-emerald-300 text-emerald-950";
+                feedbackIcon.innerHTML = "🎉";
+                feedbackTitle.textContent = "Chính xác! Xuất sắc lắm!";
+                feedbackText.innerHTML = `<b>Giải thích:</b> ${explainText}`;
+            } else {
+                playSound('wrong');
+                combo = 0;
+                lives--;
+
+                feedbackCard.className = "rounded-2xl p-4 sm:p-5 mb-4 border-2 bg-red-50 border-red-300 text-red-950";
+                feedbackIcon.innerHTML = "💡";
+                feedbackTitle.textContent = "Chưa chính xác rồi! Đừng lo lắng nhé!";
+                feedbackText.innerHTML = `<b>Giải thích đáp án đúng:</b> ${explainText}`;
+            }
+
+            updateHUD();
+
+            if (lives <= 0) {
+                setTimeout(endGame, 1500);
+            }
+        }
+
+        function nextQuestion() {
+            currentIndex++;
+            if (currentIndex < currentQuestions.length && lives > 0) {
+                loadQuestion();
+            } else {
+                endGame();
+            }
+        }
+
+        function endGame() {
+            document.getElementById('screen-game').classList.add('hidden');
+            document.getElementById('hud').classList.add('hidden');
+            document.getElementById('hud').classList.remove('flex');
+            document.getElementById('screen-end').classList.remove('hidden');
+
+            const endHeader = document.getElementById('end-header');
+            const certName = document.getElementById('cert-name');
+            const certScore = document.getElementById('cert-score');
+            const certRank = document.getElementById('cert-rank');
+            const certMessage = document.getElementById('cert-message');
+
+            certName.textContent = playerName;
+            certScore.textContent = score;
+
+            if (lives > 0) {
+                playSound('win');
+                endHeader.innerHTML = `
+                    <div class="text-6xl mb-2">🏆</div>
+                    <h2 class="text-3xl font-black text-indigo-950">CHÚC MỪNG EM ĐÃ HOÀN THÀNH!</h2>
+                    <p class="text-slate-600 font-bold">Em đã chinh phục thành công Hành Trình Dũng Sĩ Tin Học!</p>
+                `;
+
+                if (score >= 1800) {
+                    certRank.textContent = "Dũng Sĩ Tối Cao 🌟";
+                    certRank.className = "text-lg font-black text-amber-600";
+                    certMessage.textContent = "Em có kiến thức Tin học xuất sắc và phản xạ vô cùng tuyệt vời!";
+                } else {
+                    certRank.textContent = "Dũng Sĩ Tích Cực ⭐";
+                    certRank.className = "text-lg font-black text-emerald-600";
+                    certMessage.textContent = "Em đã nắm rất tốt các kiến thức Tin học cơ bản của Chủ đề 1!";
+                }
+            } else {
+                endHeader.innerHTML = `
+                    <div class="text-6xl mb-2">💪</div>
+                    <h2 class="text-3xl font-black text-indigo-950">HẾT MẠNG RỒI! CỐ LÊN NHÉ!</h2>
+                    <p class="text-slate-600 font-bold">Đừng nản lòng, hãy thử lại để đạt điểm cao hơn nhé!</p>
+                `;
+                certRank.textContent = "Chiến Binh Cố Gắng 🎈";
+                certRank.className = "text-lg font-black text-indigo-600";
+                certMessage.textContent = "Hãy ôn lại các câu chưa đúng và thử lại lượt chơi mới nhé!";
+            }
+        }
+
+        function restartGame() {
+            document.getElementById('screen-end').classList.add('hidden');
+            document.getElementById('screen-start').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
