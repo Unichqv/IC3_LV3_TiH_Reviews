@@ -1,333 +1,1097 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Hành Trình Dũng Sĩ Tin Học Lớp 5</title>
-<style>
-*{box-sizing:border-box}
-body{
-  margin:0; min-height:100vh; font-family:Nunito,Arial,sans-serif;
-  background:linear-gradient(135deg,#eef2ff,#f5f3ff 48%,#ecfdf5);
-  color:#0f172a;
-}
-button,input,select{font:inherit}
-button{cursor:pointer}
-.app{min-height:100vh;padding:22px}
-.shell{max-width:980px;margin:auto}
-.card{background:#fff;border:1px solid #e2e8f0;border-radius:28px;box-shadow:0 15px 45px rgba(15,23,42,.10)}
-.intro{max-width:680px;margin:25px auto;padding:30px;text-align:center}
-.badge{display:inline-flex;padding:7px 15px;border-radius:999px;background:#eef2ff;color:#4338ca;border:1px solid #c7d2fe;font-weight:900;font-size:12px;letter-spacing:.08em}
-.logo{width:84px;height:84px;border-radius:28px;margin:18px auto 12px;display:flex;align-items:center;justify-content:center;font-size:42px;color:#fff;background:linear-gradient(135deg,#4f46e5,#7c3aed)}
-h1{font-size:clamp(28px,5vw,46px);line-height:1.05;margin:8px 0;font-weight:900}
-.gradient{background:linear-gradient(90deg,#4f46e5,#7c3aed);-webkit-background-clip:text;color:transparent}
-.subcard{background:#fff;border:1px solid #e2e8f0;border-radius:20px;padding:14px;margin:20px 0;color:#64748b}
-.form{padding:22px;text-align:left;margin-top:18px}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:13px}
-label{display:block;font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.06em;margin-bottom:7px;color:#334155}
-input,select{width:100%;padding:13px 14px;border:1px solid #cbd5e1;background:#f8fafc;border-radius:13px;outline:none;font-weight:700}
-input:focus,select:focus{border-color:#6366f1;box-shadow:0 0 0 3px rgba(99,102,241,.13)}
-.btn{border:0;border-radius:15px;padding:14px 18px;font-weight:900;transition:.15s}
-.btn:hover{transform:translateY(-1px)}
-.primary{background:#4f46e5;color:#fff}
-.success{background:#059669;color:#fff}
-.danger{background:#e11d48;color:#fff}
-.secondary{background:#f1f5f9;color:#334155}
-.full{width:100%}
-.error{margin-top:8px;background:#fff1f2;border:1px solid #fecdd3;color:#be123c;padding:10px;border-radius:12px;font-size:13px;font-weight:800}
-.sound{margin-top:15px;border:0;background:#f1f5f9;padding:9px 14px;border-radius:12px;font-weight:800}
-.exam{max-width:820px;margin:auto}
-.hud{padding:14px 16px;margin-bottom:12px}
-.hudrow{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
-.pills{display:flex;gap:8px;flex-wrap:wrap}
-.pill{padding:7px 12px;border-radius:12px;font-weight:900;font-size:13px}
-.life{background:#fff1f2;color:#be123c;border:1px solid #fecdd3}
-.score{background:#fffbeb;color:#92400e;border:1px solid #fde68a}
-.combo{background:#4f46e5;color:#fff}
-.progress{height:9px;background:#f1f5f9;border-radius:99px;overflow:hidden;margin-top:12px}
-.progress>div{height:100%;background:linear-gradient(90deg,#6366f1,#34d399);transition:.3s}
-.question{position:relative;padding:25px;min-height:540px}
-.category{color:#4f46e5;font-size:12px;font-weight:900;text-transform:uppercase}
-.question h2{font-size:clamp(20px,3vw,28px);line-height:1.25;margin:12px 0 22px}
-.options{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.option{padding:16px;border:2px solid #e2e8f0;border-radius:18px;background:#f8fafc;text-align:left;font-weight:800;display:flex;gap:12px;align-items:flex-start}
-.option:hover{border-color:#818cf8;background:#eef2ff}
-.option.correct{border-color:#10b981;background:#ecfdf5;color:#065f46}
-.option.wrong{border-color:#f43f5e;background:#fff1f2;color:#9f1239}
-.letter{width:29px;height:29px;min-width:29px;border-radius:99px;background:#4f46e5;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px}
-.choice-list{display:grid;gap:9px}
-.choice{padding:13px;border:2px solid #e2e8f0;border-radius:16px;background:#f8fafc;font-weight:700}
-.choice.selected{border-color:#6366f1;background:#eef2ff}
-.action{margin-top:16px}
-.feedback{position:absolute;inset:0;background:rgba(255,255,255,.96);backdrop-filter:blur(8px);z-index:5;border-radius:26px;padding:28px;display:flex;flex-direction:column;justify-content:space-between}
-.feedbackbox{margin:auto 0}
-.status{padding:17px;border:2px solid;border-radius:18px;font-weight:900}
-.status.ok{background:#ecfdf5;border-color:#86efac;color:#065f46}
-.status.bad{background:#fff1f2;border-color:#fda4af;color:#9f1239}
-.explain{margin-top:12px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:17px;padding:17px;line-height:1.6}
-.matchgrid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
-.matchitem{padding:13px;border:2px solid #e2e8f0;border-radius:15px;background:#f8fafc;margin-bottom:8px;font-weight:800}
-.matchitem.active{border-color:#6366f1;background:#eef2ff}
-.matchitem.paired{border-color:#86efac;background:#ecfdf5}
-.binary{display:flex;gap:8px}
-.binary button{border:1px solid #cbd5e1;border-radius:11px;padding:8px 11px;background:#fff;font-weight:900}
-.binary .yes.active{background:#059669;color:#fff}
-.binary .no.active{background:#e11d48;color:#fff}
-.orderitem{display:flex;align-items:center;justify-content:space-between;padding:13px;border:2px solid #e2e8f0;border-radius:15px;background:#f8fafc;margin:8px 0}
-.arrows button{border:1px solid #cbd5e1;background:#fff;border-radius:8px;padding:4px 8px}
-.hotspot{position:relative;min-height:230px;border-radius:18px;background:linear-gradient(135deg,#e0e7ff,#dbeafe);border:2px solid #c7d2fe;overflow:hidden}
-.browser{position:absolute;inset:18px;background:#fff;border-radius:12px;box-shadow:0 8px 25px rgba(15,23,42,.15)}
-.browser-top{height:42px;background:#e2e8f0;border-radius:12px 12px 0 0;padding:8px}
-.address{margin-left:35px;background:#fff;border-radius:8px;height:25px;padding:4px 12px;font-size:12px;color:#64748b}
-.hotspot-zone{position:absolute;border:3px solid transparent;border-radius:8px;transition:.15s}
-.hotspot-zone:hover,.hotspot-zone.selected{border-color:#6366f1;background:rgba(99,102,241,.12)}
-.zone1{left:23%;top:24%;width:60%;height:18%}
-.zone2{left:8%;top:4%;width:30%;height:17%}
-.result{max-width:700px;margin:30px auto;padding:30px;text-align:center}
-.trophy{font-size:70px}
-.scorebig{font-size:56px;font-weight:900;color:#4f46e5}
-.result-link{margin-top:12px;padding-top:12px;border-top:1px solid #e0e0e0;font-size:12px;color:#999}
-.result-link a{color:#4f46e5;text-decoration:none;font-weight:700}
-.result-link a:hover{text-decoration:underline}
-.footer-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}
-@media(max-width:650px){
- .app{padding:10px}.grid2,.options,.matchgrid,.footer-actions{grid-template-columns:1fr}
- .intro,.question{padding:18px}.question{min-height:620px}
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hành Trình Dũng Sĩ Tin Học Lớp 5</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #0f172a;
+      padding: 16px;
+    }
+    
+    button, input, select { font: inherit; }
+    button { cursor: pointer; }
+    
+    .app { min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+    .container { max-width: 900px; width: 100%; margin: 0 auto; }
+    .card {
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      padding: 40px;
+      animation: slideUp 0.5s ease;
+    }
+    
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .intro {
+      text-align: center;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+    
+    .badge {
+      display: inline-block;
+      background: #667eea;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 11px;
+      letter-spacing: 1px;
+      margin-bottom: 16px;
+      text-transform: uppercase;
+    }
+    
+    .logo {
+      width: 100px;
+      height: 100px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      border-radius: 25px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 50px;
+      margin: 20px auto;
+    }
+    
+    h1 {
+      font-size: 36px;
+      margin: 16px 0;
+      font-weight: 900;
+      line-height: 1.2;
+    }
+    
+    .gradient-text {
+      background: linear-gradient(90deg, #667eea, #764ba2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .info-box {
+      background: #f8f9fa;
+      border: 1px solid #e0e0e0;
+      border-radius: 12px;
+      padding: 16px;
+      margin: 20px 0;
+      font-size: 14px;
+      color: #555;
+    }
+    
+    .form-group {
+      text-align: left;
+      margin: 20px 0;
+    }
+    
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    
+    label {
+      display: block;
+      font-weight: 700;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+      color: #333;
+    }
+    
+    input, select {
+      width: 100%;
+      padding: 12px 14px;
+      border: 2px solid #e0e0e0;
+      background: #f8f9fa;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      outline: none;
+      transition: all 0.3s;
+    }
+    
+    input:focus, select:focus {
+      border-color: #667eea;
+      background: white;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    
+    .error-msg {
+      background: #ffebee;
+      color: #c62828;
+      padding: 12px;
+      border-radius: 8px;
+      margin-top: 10px;
+      font-weight: 600;
+      font-size: 13px;
+      border-left: 4px solid #c62828;
+    }
+    
+    .btn {
+      border: none;
+      border-radius: 10px;
+      padding: 14px 24px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      transition: all 0.3s;
+      cursor: pointer;
+      font-size: 13px;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      width: 100%;
+      margin-top: 12px;
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+    }
+    
+    .btn-secondary {
+      background: #f0f0f0;
+      color: #333;
+      padding: 10px 16px;
+      margin-top: 16px;
+    }
+    
+    .btn-secondary:hover {
+      background: #e0e0e0;
+    }
+    
+    /* HUD - Thanh trạng thái */
+    .hud {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    
+    .hud-stats {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    
+    .stat-badge {
+      background: #f5f5f5;
+      border: 2px solid #e0e0e0;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 12px;
+      min-width: 60px;
+      text-align: center;
+    }
+    
+    .stat-badge.life { border-color: #f44336; background: #ffebee; color: #c62828; }
+    .stat-badge.score { border-color: #ff9800; background: #fff3e0; color: #e65100; }
+    .stat-badge.combo { border-color: #667eea; background: #eef2ff; color: #667eea; }
+    
+    .progress-bar {
+      width: 100%;
+      height: 6px;
+      background: #e0e0e0;
+      border-radius: 3px;
+      overflow: hidden;
+      margin-top: 12px;
+    }
+    
+    .progress-bar > div {
+      height: 100%;
+      background: linear-gradient(90deg, #667eea, #764ba2);
+      transition: width 0.3s;
+    }
+    
+    /* Câu hỏi */
+    .question-card {
+      min-height: 400px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    
+    .question-header {
+      margin-bottom: 20px;
+    }
+    
+    .question-category {
+      font-size: 11px;
+      font-weight: 700;
+      color: #667eea;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+    
+    .question-text {
+      font-size: 20px;
+      font-weight: 900;
+      color: #0f172a;
+      line-height: 1.4;
+      margin: 12px 0;
+    }
+    
+    .question-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 12px;
+    }
+    
+    /* Các dạng câu hỏi */
+    .options-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    
+    .option-btn {
+      background: #f8f9fa;
+      border: 2px solid #e0e0e0;
+      border-radius: 12px;
+      padding: 16px;
+      text-align: left;
+      font-weight: 600;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .option-btn:hover:not(:disabled) {
+      border-color: #667eea;
+      background: #eef2ff;
+    }
+    
+    .option-btn:disabled {
+      cursor: not-allowed;
+    }
+    
+    .option-btn.correct {
+      background: #e8f5e9;
+      border-color: #4caf50;
+      color: #1b5e20;
+    }
+    
+    .option-btn.wrong {
+      background: #ffebee;
+      border-color: #f44336;
+      color: #c62828;
+    }
+    
+    .option-letter {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      background: #667eea;
+      color: white;
+      border-radius: 50%;
+      font-weight: 700;
+      font-size: 12px;
+      flex-shrink: 0;
+    }
+    
+    .choice-list { gap: 10px; display: flex; flex-direction: column; }
+    .choice-btn {
+      background: #f8f9fa;
+      border: 2px solid #e0e0e0;
+      padding: 12px;
+      border-radius: 10px;
+      text-align: left;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    
+    .choice-btn:hover { border-color: #667eea; background: #eef2ff; }
+    .choice-btn.selected { background: #eef2ff; border-color: #667eea; }
+    .choice-btn.correct { background: #e8f5e9; border-color: #4caf50; }
+    .choice-btn.wrong { background: #ffebee; border-color: #f44336; }
+    
+    /* Matching */
+    .matching-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    
+    .matching-col h4 { font-size: 13px; font-weight: 700; margin-bottom: 12px; text-transform: uppercase; color: #667eea; }
+    .matching-item {
+      background: #f8f9fa;
+      border: 2px solid #e0e0e0;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s;
+      margin-bottom: 8px;
+    }
+    
+    .matching-item:hover { border-color: #667eea; background: #eef2ff; }
+    .matching-item.active { background: #667eea; color: white; border-color: #667eea; }
+    .matching-item.paired { background: #e8f5e9; border-color: #4caf50; color: #1b5e20; }
+    
+    /* Binary */
+    .binary-items { gap: 12px; display: flex; flex-direction: column; }
+    .binary-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f8f9fa;
+      padding: 12px;
+      border-radius: 10px;
+      gap: 12px;
+    }
+    
+    .binary-buttons {
+      display: flex;
+      gap: 8px;
+    }
+    
+    .binary-btn {
+      padding: 8px 14px;
+      border: 2px solid #e0e0e0;
+      background: white;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 12px;
+    }
+    
+    .binary-btn:hover { border-color: #667eea; }
+    .binary-btn.yes.active { background: #4caf50; color: white; border-color: #4caf50; }
+    .binary-btn.no.active { background: #f44336; color: white; border-color: #f44336; }
+    
+    /* Order */
+    .order-items { gap: 10px; display: flex; flex-direction: column; }
+    .order-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f8f9fa;
+      padding: 12px;
+      border-radius: 10px;
+      gap: 12px;
+    }
+    
+    .order-step {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .order-number {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      background: #667eea;
+      color: white;
+      border-radius: 50%;
+      font-weight: 700;
+      font-size: 12px;
+    }
+    
+    .order-buttons {
+      display: flex;
+      gap: 4px;
+    }
+    
+    .order-btn {
+      padding: 6px 10px;
+      border: 1px solid #e0e0e0;
+      background: white;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+      transition: all 0.2s;
+    }
+    
+    .order-btn:hover:not(:disabled) { background: #f0f0f0; }
+    .order-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+    
+    /* Feedback */
+    .feedback-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(4px);
+      border-radius: 20px;
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      animation: fadeIn 0.3s;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    .feedback-status {
+      padding: 14px;
+      border-radius: 10px;
+      text-align: center;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+    
+    .feedback-status.correct {
+      background: #e8f5e9;
+      color: #1b5e20;
+      border: 2px solid #4caf50;
+    }
+    
+    .feedback-status.wrong {
+      background: #ffebee;
+      color: #c62828;
+      border: 2px solid #f44336;
+    }
+    
+    .feedback-explain {
+      background: #f8f9fa;
+      border: 1px solid #e0e0e0;
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 12px;
+      font-size: 13px;
+      line-height: 1.6;
+      color: #555;
+    }
+    
+    .btn-next {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      font-weight: 700;
+      cursor: pointer;
+      text-transform: uppercase;
+      font-size: 13px;
+      letter-spacing: 0.5px;
+      transition: all 0.3s;
+    }
+    
+    .btn-next:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+    }
+    
+    /* Result */
+    .result-card {
+      text-align: center;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    
+    .trophy { font-size: 80px; margin-bottom: 12px; }
+    .score-big { font-size: 56px; font-weight: 900; color: #667eea; margin: 16px 0; }
+    
+    .result-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 20px;
+    }
+    
+    .result-actions .btn { margin-top: 0; padding: 14px; }
+    
+    @media (max-width: 768px) {
+      .card { padding: 24px; }
+      .form-row, .options-grid, .matching-grid, .result-actions { grid-template-columns: 1fr; }
+      h1 { font-size: 26px; }
+      .question-text { font-size: 18px; }
+      .hud { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
 </head>
 <body>
-<div id="app"></div>
-<script>
-// DÁN LINK GOOGLE WEB APP VÀO ĐÂY SAU KHI TẠO XONG
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwfu_GYJpkin4655KGvMW1C96HIR42QJs26A3wEb-7D0avwU3ZGD7sXcXkTREP0Tlek1g/exec";
+  <div id="app"></div>
 
-const KEY='tinHocStudentData_v1';
+  <script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwfu_GYJpkin4655KGvMW1C96HIR42QJs26A3wEb-7D0avwU3ZGD7sXcXkTREP0Tlek1g/exec";
+    
+    const quiz = {
+      id: "demo-001",
+      title: "Hành Trình Dũng Sĩ - Thế Giới Công Nghệ Số",
+      questions: [
+        {
+          type: "multiple-choice",
+          category: "Thiết Bị",
+          text: "Thiết bị nào thường dùng để lưu trữ dữ liệu lâu dài?",
+          options: ["RAM", "SSD", "CPU", "GPU"],
+          correct: 1,
+          explain: "SSD là thiết bị lưu trữ bán dẫn, có khả năng giữ dữ liệu lâu dài khi tắt máy."
+        },
+        {
+          type: "multiple-select",
+          category: "Điện Toán Đám Mây",
+          text: "Những đặc điểm nào phù hợp với lưu trữ đám mây?",
+          options: ["Truy cập qua Internet", "Có thể chia sẻ tập tin", "Lưu trữ vật lý tại nhà riêng", "Không cần kết nối mạng"],
+          multipleCorrect: [0, 1],
+          explain: "Lưu trữ đám mây cho phép truy cập qua Internet và chia sẻ tập tin dễ dàng."
+        },
+        {
+          type: "matching",
+          category: "Thuật Ngữ",
+          text: "Nối thuật ngữ với ý nghĩa phù hợp.",
+          pairs: [
+            ["URL", "Địa chỉ của tài nguyên trên Web"],
+            ["IP", "Địa chỉ của thiết bị trong mạng"],
+            ["GPS", "Hệ thống định vị toàn cầu"]
+          ],
+          explain: "URL xác định tài nguyên Web; IP xác định thiết bị trong mạng; GPS dùng cho định vị."
+        },
+        {
+          type: "binary",
+          category: "Đúng / Sai",
+          text: "Đánh giá các nhận định sau.",
+          items: [
+            ["Cloud storage có thể truy cập qua Internet.", true],
+            ["CPU là thiết bị dùng để lưu trữ tệp lâu dài.", false],
+            ["GPS có thể hỗ trợ xác định vị trí.", true]
+          ],
+          explain: "Các nhận định trên lần lượt là Đúng, Sai và Đúng."
+        },
+        {
+          type: "process-order",
+          category: "Quy Trình",
+          text: "Sắp xếp quy trình đăng nhập hệ thống theo thứ tự hợp lý.",
+          steps: ["Mở trang đăng nhập", "Nhập tên tài khoản", "Nhập mật khẩu", "Nhấn nút Đăng nhập"],
+          correct: [0, 1, 2, 3],
+          explain: "Đây là trình tự thao tác đăng nhập cơ bản."
+        }
+      ]
+    };
 
-const quiz = {
-  id:"demo-001",
-  title:"Hành Trình Dũng Sĩ - Thế Giới Công Nghệ Số",
-  questions:[
-    {type:"multiple-choice",category:"Thiết bị",text:"Thiết bị nào thường dùng để lưu trữ dữ liệu lâu dài?",options:["RAM","SSD","CPU","GPU"],correct:1,explain:"SSD là thiết bị lưu trữ bán dẫn, có khả năng giữ dữ liệu lâu dài, không bị mất khi tắt máy."},
-    {type:"multiple-select",category:"Điện toán đám mây",text:"Những đặc điểm nào phù hợp với lưu trữ đám mây?",options:["Truy cập qua Internet","Có thể chia sẻ tập tin","Lưu trữ vật lý tại nhà riêng","Không cần kết nối mạng"],multipleCorrect:[0,1],explain:"Lưu trữ đám mây cho phép truy cập qua Internet và chia sẻ tập tin dễ dàng."},
-    {type:"matching",category:"Thuật ngữ",text:"Nối thuật ngữ với ý nghĩa phù hợp.",pairs:[
-      ["URL","Địa chỉ của tài nguyên trên Web"],
-      ["IP","Địa chỉ của thiết bị trong mạng"],
-      ["GPS","Hệ thống định vị toàn cầu"]
-    ],explain:"URL xác định tài nguyên Web; IP xác định thiết bị trong mạng; GPS dùng cho định vị."},
-    {type:"binary",category:"Đúng / Sai",text:"Đánh giá các nhận định sau.",items:[
-      ["Cloud storage có thể truy cập qua Internet.",true],
-      ["CPU là thiết bị dùng để lưu trữ tệp lâu dài.",false],
-      ["GPS có thể hỗ trợ xác định vị trí.",true]
-    ],explain:"Các nhận định trên lần lượt là Đúng, Sai và Đúng."},
-    {type:"process-order",category:"Quy trình",text:"Sắp xếp quy trình đăng nhập hệ thống theo thứ tự hợp lý.",steps:[
-      "Mở trang đăng nhập","Nhập tên tài khoản","Nhập mật khẩu","Nhấn nút Đăng nhập"
-    ],correct:[0,1,2,3],explain:"Đây là trình tự thao tác đăng nhập cơ bản."},
-    {type:"image-click",category:"Tương tác hình ảnh",text:"Hãy chọn vùng Thanh Địa Chỉ (Address Bar) trên trình duyệt.",explain:"Thanh địa chỉ là nơi nhập URL của trang web bạn muốn truy cập."}
-  ]
-};
+    let state = {
+      screen: "intro",
+      name: "",
+      className: "Lớp Năm 1",
+      gender: "Nam",
+      index: 0,
+      lives: 3,
+      score: 0,
+      correct: 0,
+      answered: false,
+      answerCorrect: null,
+      selected: null,
+      multi: [],
+      binary: {},
+      matches: {},
+      selectedLeft: null,
+      order: [],
+      muted: false
+    };
 
-let state = {
-  screen:"intro", name:"", className:"Lớp Năm 1", gender:"Nam", index:0, lives:3, score:0, correct:0,
-  answered:false, answerCorrect:null, selected:null, multi:[], binary:{},
-  matches:{}, selectedLeft:null, order:[], muted:false
-};
+    const app = document.getElementById("app");
 
-const app=document.getElementById("app");
+    function render() {
+      if (state.screen === "intro") renderIntro();
+      else if (state.screen === "playing") renderExam();
+      else if (state.screen === "result") renderResult();
+      else renderFailed();
+    }
 
-function render(){
-  if(state.screen==="intro") renderIntro();
-  else if(state.screen==="playing") renderExam();
-  else if(state.screen==="result") renderResult();
-  else renderFailed();
-}
+    function renderIntro() {
+      app.innerHTML = `
+        <div class="app">
+          <div class="container">
+            <div class="card intro">
+              <div class="badge">✨ Đấu Trường Tri Thức Số</div>
+              <div class="logo">🚀</div>
+              <h1>HÀNH TRÌNH DŨNG SĨ<br><span class="gradient-text">THẾ GIỚI CÔNG NGHỆ SỐ</span></h1>
+              <div class="info-box">
+                <strong>${quiz.title}</strong><br>
+                <small>${quiz.questions.length} câu hỏi thử thách · 3 trái tim sinh mệnh</small>
+              </div>
 
-function renderIntro(){
-  app.innerHTML=`
-  <div class="app"><div class="shell">
-    <div class="card intro">
-      <div class="badge">ĐẤU TRƯỜNG TRI THỨC SỐ</div>
-      <div class="logo">🚀</div>
-      <h1>HÀNH TRÌNH DŨNG SĨ<br><span class="gradient">THẾ GIỚI CÔNG NGHỆ SỐ</span></h1>
-      <div class="subcard"><b>${quiz.title}</b><br><small>${quiz.questions.length} câu hỏi thử thách · 3 trái tim sinh mệnh</small></div>
-      <form id="startForm" class="card form">
-        <div class="grid2">
-          <div><label>Lớp học</label><input id="className" value="Lớp Năm 1" required></div>
-          <div><label>Giới tính</label><select id="gender"><option>Nam</option><option>Nữ</option><option>Khác</option></select></div>
+              <form id="startForm" class="form-group">
+                <div class="form-row">
+                  <div>
+                    <label>Chọn Lớp Học</label>
+                    <select id="className">
+                      <option>Lớp Năm 1</option>
+                      <option>Lớp Năm 2</option>
+                      <option>Lớp Năm 3</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label>Giới Tính</label>
+                    <select id="gender">
+                      <option>Nam</option>
+                      <option>Nữ</option>
+                      <option>Khác</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label>Họ và Tên Dũng Sĩ <span style="color: #f44336;">*</span></label>
+                  <input id="studentName" type="text" placeholder="Nhập họ và tên của em..." required>
+                </div>
+
+                <div id="startError"></div>
+                <button type="submit" class="btn btn-primary">▶ BẮT ĐẦU CHƠI NGAY!</button>
+              </form>
+
+              <button class="btn btn-secondary" id="muteBtn">🔊 Âm thanh: B��t</button>
+            </div>
+          </div>
         </div>
-        <div style="margin-top:14px"><label>Họ và tên dũng sĩ</label><input id="studentName" placeholder="Nhập họ và tên..." required></div>
-        <div id="startError"></div>
-        <button class="btn primary full" style="margin-top:15px">▶ BẮT ĐẦU CHƠI NGAY!</button>
-      </form>
-      <button class="sound" id="muteBtn">🔊 Âm thanh: Bật</button>
-    </div>
-  </div></div>`;
-  document.getElementById("startForm").onsubmit=e=>{
-    e.preventDefault();
-    const name=document.getElementById("studentName").value.trim();
-    if(!name){document.getElementById("startError").innerHTML='<div class="error">Vui lòng nhập họ và tên.</div>';return}
-    state.name=name;
-    state.className=document.getElementById("className").value.trim();
-    state.gender=document.getElementById("gender").value;
-    startExam();
-  };
-  document.getElementById("muteBtn").onclick=()=>{state.muted=!state.muted;document.getElementById("muteBtn").textContent=state.muted?"🔇 Âm thanh: Tắt":"🔊 Âm thanh: Bật"};
-}
+      `;
 
-function startExam(){
-  state.screen="playing";state.index=0;state.lives=3;state.score=0;state.correct=0;state.answered=false;
-  prepareQuestion();render();
-}
-function prepareQuestion(){
-  state.answered=false;state.answerCorrect=null;state.selected=null;state.multi=[];state.binary={};state.matches={};state.selectedLeft=null;
-  const q=quiz.questions[state.index];
-  state.order=q.type==="process-order"?q.steps.map((_,i)=>i).sort(()=>Math.random()-.5):[];
-}
-function answer(correct){
-  if(state.answered)return;
-  state.answered=true;state.answerCorrect=correct;
-  if(correct){state.correct++;state.score+=100+(state.correct>1?state.correct*15:0)}
-  else state.lives=Math.max(0,state.lives-1);
-  render();
-}
-function next(){
-  if(state.lives<=0){saveResult();state.screen="failed";render();return}
-  if(state.index+1>=quiz.questions.length){saveResult();state.screen="result";render();return}
-  state.index++;prepareQuestion();render();
-}
+      document.getElementById("startForm").onsubmit = (e) => {
+        e.preventDefault();
+        const name = document.getElementById("studentName").value.trim();
+        if (!name) {
+          document.getElementById("startError").innerHTML = '<div class="error-msg">⚠️ Vui lòng nhập họ và tên của em!</div>';
+          return;
+        }
+        state.name = name;
+        state.className = document.getElementById("className").value.trim();
+        state.gender = document.getElementById("gender").value;
+        startExam();
+      };
 
-function renderExam(){
- const q=quiz.questions[state.index];
- let body="";
- if(q.type==="multiple-choice"){
-   body=`<div class="options">${q.options.map((o,i)=>{
-     let cls="option";if(state.answered&&i===q.correct)cls+=" correct";else if(state.answered&&i===state.selected)cls+=" wrong";
-     return `<button class="${cls}" data-i="${i}" ${state.answered?"disabled":""}><span class="letter">${"ABCDEF"[i]}</span><span>${o}</span></button>`
-   }).join("")}</div>`;
- } else if(q.type==="multiple-select"){
-   body=`<div class="choice-list">${q.options.map((o,i)=>`<button class="choice ${state.multi.includes(i)?"selected":""}" data-multi="${i}" ${state.answered?"disabled":""}>${state.multi.includes(i)?"✓ ":""}${o}</button>`).join("")}</div>
-   ${!state.answered?'<button class="btn primary full action" id="submitMulti">Xác nhận các đáp án đã chọn</button>':""}`;
- } else if(q.type==="matching"){
-   const rights=q.pairs.map(x=>x[1]).sort();
-   body=`<div class="matchgrid"><div><b>Cột A</b>${q.pairs.map((p,i)=>`<button class="matchitem ${state.selectedLeft===p[0]?"active":""} ${state.matches[p[0]]?"paired":""}" data-left="${i}">${p[0]}</button>`).join("")}</div><div><b>Cột B</b>${rights.map((r,i)=>`<button class="matchitem ${state.matches[state.selectedLeft]===r?"paired":""}" data-right="${i}">${r}</button>`).join("")}</div></div>
-   ${!state.answered?'<button class="btn primary full action" id="submitMatch">Xác nhận ghép nối</button>':""}`;
-   state._rights=rights;
- } else if(q.type==="binary"){
-   body=q.items.map((it,i)=>`<div class="choice" style="display:flex;justify-content:space-between;gap:10px;align-items:center"><span>${i+1}. ${it[0]}</span><span class="binary"><button class="yes ${state.binary[i]==="1"?"active":""}" data-bin="${i}:1" ${state.answered?"disabled":""}>Đúng</button><button class="no ${state.binary[i]==="0"?"active":""}" data-bin="${i}:0" ${state.answered?"disabled":""}>Sai</button></span></div>`).join("")+
-   (!state.answered?'<button class="btn primary full action" id="submitBin">Xác nhận đánh giá</button>':"");
- } else if(q.type==="process-order"){
-   body=state.order.map((idx,pos)=>`<div class="orderitem"><span><b>${pos+1}.</b> ${q.steps[idx]}</span><span class="arrows"><button data-up="${pos}" ${pos===0?"disabled":""}>▲</button><button data-down="${pos}" ${pos===state.order.length-1?"disabled":""}>▼</button></span></div>`).join("")+
-   (!state.answered?'<button class="btn primary full action" id="submitOrder">Xác nhận thứ tự sắp xếp</button>':"");
- } else {
-   body=`<div class="hotspot"><div class="browser"><div class="browser-top"><div class="address">https://www.example.com</div></div></div>
-     <button class="hotspot-zone zone1 ${state.selected==="address"?"selected":""}" data-hot="address" aria-label="Thanh địa chỉ"></button>
-     <button class="hotspot-zone zone2 ${state.selected==="tab"?"selected":""}" data-hot="tab" aria-label="Tab"></button></div>`;
- }
- app.innerHTML=`<div class="app"><div class="exam">
-   <div class="card hud"><div class="hudrow"><div class="pills"><span class="pill life">❤️ ${state.lives}</span><span class="pill score">⭐ ${state.score}</span>${state.correct>=2?`<span class="pill combo">🔥 x${state.correct}</span>`:""}</div><div style="color:#64748b;font-weight:800">${state.index+1}/${quiz.questions.length}</div></div>
-   <div class="progress"><div style="width:${(state.index+1)/quiz.questions.length*100}%"></div></div></div>
-   <div class="card question"><div><div class="category">${q.category}</div><h2>${q.text}</h2>${body}</div>
-   ${state.answered?`<div class="feedback"><div class="feedbackbox"><div class="status ${state.answerCorrect?"ok":"bad"}">${state.answerCorrect?"🎉 Chính xác! Xuất sắc lắm!":"💡 Chưa đúng, cố gắng tiếp nhé!"}</div><div class="explain">${q.explain}</div></div><button class="btn success full action" id="nextBtn">Câu tiếp theo →</button></div>`:""}</div>
-   </div></div>`;
-  bindExam(q);
-}
+      document.getElementById("muteBtn").onclick = () => {
+        state.muted = !state.muted;
+        document.getElementById("muteBtn").textContent = state.muted ? "🔇 Âm thanh: Tắt" : "🔊 Âm thanh: Bật";
+      };
+    }
 
-function bindExam(q){
- document.querySelectorAll("[data-i]").forEach(b=>b.onclick=()=>{state.selected=+b.dataset.i;answer(state.selected===q.correct)});
- document.querySelectorAll("[data-multi]").forEach(b=>b.onclick=()=>{const i=+b.dataset.multi;state.multi=state.multi.includes(i)?state.multi.filter(x=>x!==i):[...state.multi,i];render()});
- const sm=document.getElementById("submitMulti");if(sm)sm.onclick=()=>answer([...state.multi].sort().join(",")===[...q.multipleCorrect].sort().join(","));
- document.querySelectorAll("[data-left]").forEach(b=>b.onclick=()=>{state.selectedLeft=q.pairs[+b.dataset.left][0];render()});
- document.querySelectorAll("[data-right]").forEach(b=>b.onclick=()=>{if(!state.selectedLeft)return;state.matches[state.selectedLeft]=state._rights[+b.dataset.right];state.selectedLeft=null;render()});
- const sM=document.getElementById("submitMatch");if(sM)sM.onclick=()=>answer(q.pairs.every(p=>state.matches[p[0]]===p[1]));
- document.querySelectorAll("[data-bin]").forEach(b=>b.onclick=()=>{let [i,v]=b.dataset.bin.split(":");state.binary[i]=v==="1";render()});
- const sB=document.getElementById("submitBin");if(sB)sB.onclick=()=>answer(q.items.every((x,i)=>state.binary[i]===x[1]));
- document.querySelectorAll("[data-up]").forEach(b=>b.onclick=()=>moveOrder(+b.dataset.up,-1));
- document.querySelectorAll("[data-down]").forEach(b=>b.onclick=()=>moveOrder(+b.dataset.down,1));
- const sO=document.getElementById("submitOrder");if(sO)sO.onclick=()=>answer(state.order.every((v,i)=>v===q.correct[i]));
- document.querySelectorAll("[data-hot]").forEach(b=>b.onclick=()=>{state.selected=b.dataset.hot;answer(b.dataset.hot==="address")});
- const n=document.getElementById("nextBtn");if(n)n.onclick=next;
-}
-function moveOrder(pos,dir){const x=state.order[pos],to=pos+dir;state.order[pos]=state.order[to];state.order[to]=x;render()}
+    function startExam() {
+      state.screen = "playing";
+      state.index = 0;
+      state.lives = 3;
+      state.score = 0;
+      state.correct = 0;
+      state.answered = false;
+      prepareQuestion();
+      render();
+    }
 
-function saveResult(){
-  const score10 = Number((state.correct / quiz.questions.length * 10).toFixed(1));
-  
-  // Lấy dữ liệu hiện tại hoặc tạo mới (giống cấu trúc preview.html)
-  let db = JSON.parse(localStorage.getItem(KEY) || 'null');
-  if(!db){
-    db = {
-      version:'1.0',
-      classInfo:{name:'Lớp Năm 1',grade:5,description:'Lớp Tin học nâng cao khối 5'},
-      students:[]
-    };
-  }
-  
-  // Tìm hoặc tạo học sinh
-  let student = db.students.find(s => s.fullName === state.name && s.className === state.className);
-  if(!student){
-    student = {
-      studentId:'HS'+String(Date.now()).slice(-6),
-      fullName:state.name,
-      className:state.className,
-      grade:5,
-      gender:state.gender,
-      exams:[]
-    };
-    db.students.push(student);
-  }
-  
-  // Tìm hoặc tạo bài thi
-  let exam = student.exams.find(e => e.examTitle === quiz.title);
-  if(!exam){
-    exam = {examTitle:quiz.title,attempts:[]};
-    student.exams.push(exam);
-  }
-  
-  // Thêm lần làm bài mới
-  exam.attempts.push({
-    attemptNumber:exam.attempts.length+1,
-    examTitle:quiz.title,
-    score:score10,
-    correctAnswers:state.correct,
-    wrongAnswers:quiz.questions.length-state.correct,
-    submittedAt:new Date().toISOString()
-  });
-  
-  // Lưu vào localStorage
-  localStorage.setItem(KEY, JSON.stringify(db));
+    function prepareQuestion() {
+      state.answered = false;
+      state.answerCorrect = null;
+      state.selected = null;
+      state.multi = [];
+      state.binary = {};
+      state.matches = {};
+      state.selectedLeft = null;
 
-  // Gửi lên Google Apps Script
-  if(SCRIPT_URL && !SCRIPT_URL.includes("DÁN_LINK")){
-    const payload = {
-      fullName: state.name,
-      className: state.className,
-      gender: state.gender,
-      examTitle: quiz.title,
-      score: score10,
-      correctAnswers: state.correct,
-      wrongAnswers: quiz.questions.length - state.correct,
-      submittedAt: new Date().toISOString()
-    };
-    fetch(SCRIPT_URL, {
-      method: "POST",
-      mode: "no-cors",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
-    }).catch(e=>console.error(e));
-  }
-}
+      const q = quiz.questions[state.index];
+      if (q.type === "process-order" && q.steps) {
+        state.order = q.steps.map((_, i) => i).sort(() => Math.random() - 0.5);
+      }
+    }
 
-function renderResult(){
- const score10=(state.correct/quiz.questions.length*10).toFixed(1);
- app.innerHTML=`<div class="app"><div class="card result"><div class="trophy">🏆</div><div class="badge">HOÀN THÀNH THỬ THÁCH</div><h1>Chúc mừng ${state.name}!</h1><p>${state.className} - ${state.gender}</p><div class="scorebig">${score10}/10</div><p>Bạn trả lời đúng <b>${state.correct}/${quiz.questions.length}</b> câu hỏi</p><div class="footer-actions"><button class="btn primary full" id="again">Làm lại bài</button><button class="btn secondary full" id="home">Trang chủ</button></div><div class="result-link">✅ Dữ liệu đã được lưu. <a href="preview.html" target="_blank">Xem kết quả đầy đủ tại đây →</a></div></div></div>`;
- document.getElementById("again").onclick=()=>{startExam()};
- document.getElementById("home").onclick=()=>{state.screen="intro";render()};
-}
-function renderFailed(){
- app.innerHTML=`<div class="app"><div class="card result"><div class="trophy">💔</div><div class="badge" style="color:#be123c;background:#fff1f2;border-color:#fecdd3">HẾT 3 TRÁI TIM SINH MỆNH</div><h1>Tiếc quá ${state.name}!</h1><p>Bạn đã hết mạng sống. Các bạn có muốn thử lại không?</p><div class="footer-actions"><button class="btn primary full" id="retry">Thử lại</button><button class="btn secondary full" onclick="state.screen='intro';render()">Trang chủ</button></div></div></div>`;
- document.getElementById("retry").onclick=()=>startExam();
-}
-render();
-</script>
+    function answer(correct) {
+      if (state.answered) return;
+      state.answered = true;
+      state.answerCorrect = correct;
+      if (correct) {
+        state.correct++;
+        state.score += 100 + (state.correct > 1 ? state.correct * 15 : 0);
+      } else {
+        state.lives = Math.max(0, state.lives - 1);
+      }
+      render();
+    }
+
+    function next() {
+      if (state.lives <= 0) {
+        saveResult();
+        state.screen = "failed";
+        render();
+        return;
+      }
+      if (state.index + 1 >= quiz.questions.length) {
+        saveResult();
+        state.screen = "result";
+        render();
+        return;
+      }
+      state.index++;
+      prepareQuestion();
+      render();
+    }
+
+    function renderExam() {
+      const q = quiz.questions[state.index];
+      let bodyHTML = "";
+
+      if (q.type === "multiple-choice") {
+        bodyHTML = `<div class="options-grid">
+          ${q.options.map((opt, idx) => {
+            let cls = "option-btn";
+            if (state.answered) {
+              if (idx === q.correct) cls += " correct";
+              else if (idx === state.selected) cls += " wrong";
+            }
+            return `<button class="${cls}" ${state.answered ? "disabled" : ""} data-i="${idx}">
+              <span class="option-letter">${String.fromCharCode(65 + idx)}</span>
+              <span>${opt}</span>
+            </button>`;
+          }).join("")}
+        </div>`;
+      } else if (q.type === "multiple-select") {
+        bodyHTML = `
+          <div class="choice-list">
+            ${q.options.map((opt, idx) => `
+              <button class="choice-btn ${state.multi.includes(idx) ? "selected" : ""}" 
+                      ${state.answered ? "disabled" : ""} data-multi="${idx}">
+                ${state.multi.includes(idx) ? "✓ " : ""}${opt}
+              </button>
+            `).join("")}
+          </div>
+          ${!state.answered ? '<button class="btn btn-primary" id="submitMulti" style="margin-top: 14px;">Xác Nhận Đáp Án</button>' : ""}
+        `;
+      } else if (q.type === "matching") {
+        const rights = q.pairs.map(x => x[1]);
+        bodyHTML = `
+          <div class="matching-grid">
+            <div class="matching-col">
+              <h4>Cột A - Khái Niệm</h4>
+              ${q.pairs.map((pair, idx) => `
+                <button class="matching-item ${state.selectedLeft === pair[0] ? "active" : ""} ${state.matches[pair[0]] ? "paired" : ""}" 
+                        ${state.answered ? "disabled" : ""} data-left="${idx}">
+                  ${pair[0]}
+                </button>
+              `).join("")}
+            </div>
+            <div class="matching-col">
+              <h4>Cột B - Mô Tả/Chức Năng</h4>
+              ${rights.map((right, idx) => `
+                <button class="matching-item ${state.matches[state.selectedLeft] === right ? "paired" : ""}" 
+                        ${state.answered || !state.selectedLeft ? "disabled" : ""} data-right="${idx}">
+                  ${right}
+                </button>
+              `).join("")}
+            </div>
+          </div>
+          ${!state.answered ? '<button class="btn btn-primary" id="submitMatch" style="margin-top: 14px;">Xác Nhận Ghép Nối</button>' : ""}
+        `;
+        state._rights = rights;
+      } else if (q.type === "binary") {
+        bodyHTML = `
+          <div class="binary-items">
+            ${q.items.map((item, idx) => `
+              <div class="binary-item">
+                <span style="flex: 1;">${idx + 1}. ${item[0]}</span>
+                <div class="binary-buttons">
+                  <button class="binary-btn yes ${state.binary[idx] === true ? "active" : ""}" 
+                          ${state.answered ? "disabled" : ""} data-bin="${idx}:true">Đúng</button>
+                  <button class="binary-btn no ${state.binary[idx] === false ? "active" : ""}" 
+                          ${state.answered ? "disabled" : ""} data-bin="${idx}:false">Sai</button>
+                </div>
+              </div>
+            `).join("")}
+          </div>
+          ${!state.answered ? '<button class="btn btn-primary" id="submitBin" style="margin-top: 14px;">Xác Nhận Đánh Giá</button>' : ""}
+        `;
+      } else if (q.type === "process-order") {
+        bodyHTML = `
+          <div class="order-items">
+            ${state.order.map((stepIdx, pos) => `
+              <div class="order-item">
+                <div class="order-step">
+                  <span class="order-number">${pos + 1}</span>
+                  <span>${q.steps[stepIdx]}</span>
+                </div>
+                ${!state.answered ? `
+                  <div class="order-buttons">
+                    <button class="order-btn" ${pos === 0 ? "disabled" : ""} data-up="${pos}">⬆️</button>
+                    <button class="order-btn" ${pos === state.order.length - 1 ? "disabled" : ""} data-down="${pos}">⬇️</button>
+                  </div>
+                ` : ""}
+              </div>
+            `).join("")}
+          </div>
+          ${!state.answered ? '<button class="btn btn-primary" id="submitOrder" style="margin-top: 14px;">Xác Nhận Thứ Tự</button>' : ""}
+        `;
+      }
+
+      app.innerHTML = `
+        <div class="app">
+          <div class="container">
+            <div class="card">
+              <div class="hud">
+                <div class="hud-stats">
+                  <span class="stat-badge life">❤️ ${state.lives}</span>
+                  <span class="stat-badge score">⭐ ${state.score}</span>
+                  ${state.correct >= 2 ? `<span class="stat-badge combo">🔥 x${state.correct}</span>` : ""}
+                </div>
+                <div style="font-weight: 700; color: #667eea;">Câu ${state.index + 1}/${quiz.questions.length}</div>
+              </div>
+              <div class="progress-bar"><div style="width: ${((state.index + 1) / quiz.questions.length) * 100}%"></div></div>
+            </div>
+
+            <div class="card" style="margin-top: 16px;">
+              <div class="question-card">
+                <div>
+                  <div class="question-header">
+                    <div class="question-category">${q.category}</div>
+                    <h2 class="question-text">${q.text}</h2>
+                  </div>
+                  <div class="question-body">${bodyHTML}</div>
+                </div>
+
+                ${state.answered ? `
+                  <div class="feedback-overlay">
+                    <div>
+                      <div class="feedback-status ${state.answerCorrect ? "correct" : "wrong"}">
+                        ${state.answerCorrect ? "🎉 Chính xác! Xuất sắc lắm!" : "💡 Chưa đúng, cố gắng tiếp nhé!"}
+                      </div>
+                      ${q.explain ? `<div class="feedback-explain">${q.explain}</div>` : ""}
+                    </div>
+                    <button class="btn-next" id="nextBtn">Câu Tiếp Theo →</button>
+                  </div>
+                ` : ""}
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      bindExam(q);
+    }
+
+    function bindExam(q) {
+      document.querySelectorAll("[data-i]").forEach(btn => {
+        btn.onclick = () => {
+          state.selected = +btn.dataset.i;
+          answer(state.selected === q.correct);
+        };
+      });
+
+      document.querySelectorAll("[data-multi]").forEach(btn => {
+        btn.onclick = () => {
+          const idx = +btn.dataset.multi;
+          state.multi = state.multi.includes(idx) ? state.multi.filter(x => x !== idx) : [...state.multi, idx];
+          render();
+        };
+      });
+
+      const submitMulti = document.getElementById("submitMulti");
+      if (submitMulti) {
+        submitMulti.onclick = () => {
+          const userSorted = [...state.multi].sort().join(",");
+          const correctSorted = [...q.multipleCorrect].sort().join(",");
+          answer(userSorted === correctSorted);
+        };
+      }
+
+      document.querySelectorAll("[data-left]").forEach(btn => {
+        btn.onclick = () => {
+          state.selectedLeft = q.pairs[+btn.dataset.left][0];
+          render();
+        };
+      });
+
+      document.querySelectorAll("[data-right]").forEach(btn => {
+        btn.onclick = () => {
+          if (!state.selectedLeft) return;
+          state.matches[state.selectedLeft] = state._rights[+btn.dataset.right];
+          state.selectedLeft = null;
+          render();
+        };
+      });
+
+      const submitMatch = document.getElementById("submitMatch");
+      if (submitMatch) {
+        submitMatch.onclick = () => {
+          const isCorrect = q.pairs.every(pair => state.matches[pair[0]] === pair[1]);
+          answer(isCorrect);
+        };
+      }
+
+      document.querySelectorAll("[data-bin]").forEach(btn => {
+        btn.onclick = () => {
+          const [idx, val] = btn.dataset.bin.split(":");
+          state.binary[idx] = val === "true";
+          render();
+        };
+      });
+
+      const submitBin = document.getElementById("submitBin");
+      if (submitBin) {
+        submitBin.onclick = () => {
+          const isCorrect = q.items.every((item, idx) => state.binary[idx] === item[1]);
+          answer(isCorrect);
+        };
+      }
+
+      document.querySelectorAll("[data-up]").forEach(btn => {
+        btn.onclick = () => moveOrder(+btn.dataset.up, -1);
+      });
+
+      document.querySelectorAll("[data-down]").forEach(btn => {
+        btn.onclick = () => moveOrder(+btn.dataset.down, 1);
+      });
+
+      const submitOrder = document.getElementById("submitOrder");
+      if (submitOrder) {
+        submitOrder.onclick = () => {
+          const isCorrect = state.order.every((val, idx) => val === q.correct[idx]);
+          answer(isCorrect);
+        };
+      }
+
+      const nextBtn = document.getElementById("nextBtn");
+      if (nextBtn) {
+        nextBtn.onclick = next;
+      }
+    }
+
+    function moveOrder(pos, dir) {
+      const temp = state.order[pos];
+      state.order[pos] = state.order[pos + dir];
+      state.order[pos + dir] = temp;
+      render();
+    }
+
+    function saveResult() {
+      const score10 = Number((state.correct / quiz.questions.length * 10).toFixed(1));
+      const payload = {
+        fullName: state.name,
+        className: state.className,
+        gender: state.gender,
+        examTitle: quiz.title,
+        score: score10,
+        correctAnswers: state.correct,
+        wrongAnswers: quiz.questions.length - state.correct,
+        submittedAt: new Date().toISOString()
+      };
+
+      // Lưu vào localStorage
+      const KEY = 'tinHocStudentData_v1';
+      let db = JSON.parse(localStorage.getItem(KEY) || 'null');
+      
+      if (!db) {
+        db = {
+          version: '1.0',
+          classInfo: { name: 'Lớp Năm 1', grade: 5, description: 'Lớp Tin học nâng cao khối 5' },
+          students: []
+        };
+      }
+
+      let student = db.students.find(s => s.fullName === state.name && s.className === state.className);
+      if (!student) {
+        student = {
+          studentId: 'HS' + String(Date.now()).slice(-6),
+          fullName: state.name,
+          className: state.className,
+          grade: 5,
+          gender: state.gender,
+          exams: []
+        };
+        db.students.push(student);
+      }
+
+      let exam = student.exams.find(e => e.examTitle === quiz.title);
+      if (!exam) {
+        exam = { examTitle: quiz.title, attempts: [] };
+        student.exams.push(exam);
+      }
+
+      exam.attempts.push({
+        attemptNumber: exam.attempts.length + 1,
+        examTitle: quiz.title,
+        score: score10,
+        correctAnswers: state.correct,
+        wrongAnswers: quiz.questions.length - state.correct,
+        submittedAt: new Date().toISOString()
+      });
+
+      localStorage.setItem(KEY, JSON.stringify(db));
+
+      // Gửi lên Google Apps Script
+      if (SCRIPT_URL && !SCRIPT_URL.includes("DÁN_LINK")) {
+        fetch(SCRIPT_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        }).catch(e => console.error(e));
+      }
+    }
+
+    function renderResult() {
+      const score10 = (state.correct / quiz.questions.length * 10).toFixed(1);
+      app.innerHTML = `
+        <div class="app">
+          <div class="container">
+            <div class="card result-card">
+              <div class="trophy">🏆</div>
+              <div class="badge">✅ HOÀN THÀNH THỬ THÁCH</div>
+              <h1>Chúc mừng ${state.name}!</h1>
+              <p style="color: #667; font-size: 14px;">${state.className} - ${state.gender}</p>
+              <div class="score-big">${score10}/10</div>
+              <p style="color: #555; font-size: 14px;">Bạn trả lời đúng <strong>${state.correct}/${quiz.questions.length}</strong> câu hỏi</p>
+              <div class="result-actions">
+                <button class="btn btn-primary" id="again">🔄 Làm Lại</button>
+                <button class="btn" style="background: #f0f0f0; color: #333; border: none;" id="home">🏠 Trang Chủ</button>
+              </div>
+              <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #e0e0e0; font-size: 12px; color: #999;">
+                ✅ Dữ liệu đã được lưu. <a href="preview.html" style="color: #667eea; text-decoration: none;">Xem kết quả đầy đủ tại đây</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      document.getElementById("again").onclick = () => startExam();
+      document.getElementById("home").onclick = () => { state.screen = "intro"; render(); };
+    }
+
+    function renderFailed() {
+      app.innerHTML = `
+        <div class="app">
+          <div class="container">
+            <div class="card result-card">
+              <div class="trophy">💔</div>
+              <div class="badge" style="background: #ffebee; color: #c62828;">⚠️ HẾT 3 TRÁI TIM SINH MỆNH</div>
+              <h1>Tiếc quá ${state.name}!</h1>
+              <p style="color: #555; font-size: 14px;">Bạn đã hết mạng sống. Các bạn có muốn thử lại không?</p>
+              <div class="result-actions">
+                <button class="btn btn-primary" id="retry">🔄 Thử Lại</button>
+                <button class="btn" style="background: #f0f0f0; color: #333; border: none;" onclick="state.screen='intro';render()">🏠 Trang Chủ</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      document.getElementById("retry").onclick = () => startExam();
+    }
+
+    render();
+  </script>
 </body>
 </html>
