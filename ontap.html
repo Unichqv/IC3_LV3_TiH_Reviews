@@ -680,12 +680,11 @@
         <div class="app">
           <div class="container">
             <div class="card intro">
-              <div class="badge">✨ Đấu Trường Tri Thức Số</div>
+              <div class="badge">Đấu Trường Tri Thức Số</div>
               <div class="logo">🚀</div>
               <h1>HÀNH TRÌNH DŨNG SĨ<br><span class="gradient-text">THẾ GIỚI CÔNG NGHỆ SỐ</span></h1>
               <div class="info-box">
                 <strong>${quiz.title}</strong><br>
-                <small>${quiz.questions.length} câu hỏi thử thách · 3 trái tim sinh mệnh</small>
               </div>
 
               <form id="startForm" class="form-group">
@@ -700,10 +699,8 @@
                 </div>
 
                 <div id="startError"></div>
-                <button type="submit" class="btn btn-primary">▶ BẮT ĐẦU CHƠI NGAY!</button>
+                <button type="submit" class="btn btn-primary"> ▶ BẮT ĐẦU CHƠI NGAY!</button>
               </form>
-
-              <button class="btn btn-secondary" id="muteBtn">🔊 Âm thanh: B��t</button>
             </div>
           </div>
         </div>
@@ -721,11 +718,6 @@
         state.name = name;
         state.className = document.getElementById("className").value.trim();
         startExam();
-      };
-
-      document.getElementById("muteBtn").onclick = () => {
-        state.muted = !state.muted;
-        document.getElementById("muteBtn").textContent = state.muted ? "🔇 Âm thanh: Tắt" : "🔊 Âm thanh: Bật";
       };
     }
 
@@ -913,7 +905,7 @@
                   <div class="feedback-overlay">
                     <div>
                       <div class="feedback-status ${state.answerCorrect ? "correct" : "wrong"}">
-                        ${state.answerCorrect ? "🎉 Chính xác! Xuất sắc lắm!" : "💡 Chưa đúng, cố gắng tiếp nhé!"}
+                        ${state.answerCorrect ? "Chính xác! Xuất sắc lắm!" : "Chưa đúng, cố gắng tiếp nhé!"}
                       </div>
                       ${q.explain ? `<div class="feedback-explain">${q.explain}</div>` : ""}
                     </div>
@@ -1097,14 +1089,14 @@
           <div class="container">
             <div class="card result-card">
               <div class="trophy">🏆</div>
-              <div class="badge">✅ HOÀN THÀNH THỬ THÁCH</div>
+              <div class="badge">HOÀN THÀNH THỬ THÁCH</div>
               <h1>Chúc mừng ${state.name}!</h1>
               <p style="color: #667; font-size: 14px;">${state.className} · Lần làm bài thứ ${state.attemptNumber}</p>
               <div class="score-big">${score10}/10</div>
               <p style="color: #555; font-size: 14px;">Bạn trả lời đúng <strong>${state.correct}/${activeQuestions.length}</strong> câu hỏi</p>
               <div class="result-actions">
-                <button class="btn btn-primary" id="again">🔄 Làm Lại</button>
-                <button class="btn" style="background: #f0f0f0; color: #333; border: none;" id="home">🏠 Trang Chủ</button>
+                <button class="btn btn-primary" id="again">Làm Lại</button>
+                <button class="btn" style="background: #f0f0f0; color: #333; border: none;" id="home">Trang Chủ</button>
               </div>
               <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #e0e0e0; font-size: 12px; color: #999;">
                 ✅ Dữ liệu đã được lưu. <a href="preview.html" style="color: #667eea; text-decoration: none;">Xem kết quả đầy đủ tại đây</a>
@@ -1127,8 +1119,8 @@
               <h1>Tiếc quá ${state.name}!</h1>
               <p style="color: #555; font-size: 14px;">Lần làm bài thứ ${state.attemptNumber}. Bạn đã hết mạng sống. Các bạn có muốn thử lại không?</p>
               <div class="result-actions">
-                <button class="btn btn-primary" id="retry">🔄 Thử Lại</button>
-                <button class="btn" style="background: #f0f0f0; color: #333; border: none;" onclick="state.screen='intro';render()">🏠 Trang Chủ</button>
+                <button class="btn btn-primary" id="retry">Thử Lại</button>
+                <button class="btn" style="background: #f0f0f0; color: #333; border: none;" onclick="state.screen='intro';render()">Trang Chủ</button>
               </div>
             </div>
           </div>
