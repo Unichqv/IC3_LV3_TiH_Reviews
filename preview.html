@@ -22,7 +22,7 @@ button{cursor:pointer}
 .btn.primary{background:var(--primary);color:#fff}.btn.outline{border:1px solid #dce2ed}.btn.danger{border:1px solid #ffc5d0;color:var(--red);background:#fff5f7}
 .container{max-width:1450px;margin:auto;padding:22px}
 .class-head{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px 20px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;gap:20px}
-.title-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.title-row h2{margin:0;font-size:25px}
+.title-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.title-row h2{margin:0;font-size:25px}.title-row select{min-width:170px;padding:9px 30px 9px 12px}
 .badge{padding:5px 11px;border-radius:9px;font-weight:700;font-size:13px}.grade{background:#eef1ff;color:#4435df;border:1px solid #cbd2ff}.count{background:#edfff8;color:#00885d;border:1px solid #b5efd9}
 .sub{margin:7px 0 0;color:var(--muted);font-size:14px}
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
@@ -64,7 +64,7 @@ td.name{text-align:left;font-weight:750;font-size:16px}.muted{color:#9aa7ba;font
 <main class="container">
   <section class="class-head">
     <div>
-      <div class="title-row"><span class="badge grade">KHỐI 5</span><h2 id="classTitle">Lớp Năm 1</h2><span class="badge count" id="studentCount">0 Học Sinh</span></div>
+      <div class="title-row"><span class="badge grade">KHỐI 5</span><select id="classFilter" aria-label="Lọc theo lớp" onchange="render()"><option value="">Tất cả lớp</option></select><h2 id="classTitle">Lớp Năm 1</h2><span class="badge count" id="studentCount">0 Học Sinh</span></div>
       <p class="sub">Lớp Tin học nâng cao khối 5</p>
     </div>
     <div class="actions">
@@ -150,6 +150,7 @@ function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&l
 function fmtDate(s){if(!s)return '-';const d=new Date(s);return isNaN(d)?s:d.toLocaleString('vi-VN',{hour:'2-digit',minute:'2-digit',day:'2-digit',month:'2-digit',year:'numeric'});}
 function examsOf(s){return s.exams||[]}
 function allExamNames(){return [...new Set(db.students.flatMap(s=>examsOf(s).map(e=>e.examTitle)).filter(Boolean))]}
+function allClassNames(){return [...new Set([db.classInfo.name,...db.students.map(s=>s.className)].filter(Boolean))]}
 
 function statsFor(s,filter=''){
   let ex=examsOf(s); if(filter) ex=ex.filter(e=>e.examTitle===filter);
@@ -162,26 +163,32 @@ function statsFor(s,filter=''){
 }
 
 function render(){
-  const q=document.getElementById('search').value.toLowerCase().trim(), filter=document.getElementById('examFilter').value;
-  document.getElementById('classTitle').textContent=db.classInfo.name;
-  document.getElementById('studentCount').textContent=`${db.students.length} Học Sinh`;
-  document.getElementById('statStudents').textContent=db.students.length;
-  const rows=db.students.filter(s=>s.fullName.toLowerCase().includes(q));
+  const q=document.getElementById('search').value.toLowerCase().trim();
+  const examFilter=document.getElementById('examFilter').value;
+  const classFilter=document.getElementById('classFilter').value;
+  const rows=db.students.filter(s=>(!classFilter||s.className===classFilter)&&String(s.fullName||'').toLowerCase().includes(q));
+  document.getElementById('classTitle').textContent=classFilter||'Tất cả lớp';
+  document.getElementById('studentCount').textContent=`${rows.length} Học Sinh`;
+  document.getElementById('statStudents').textContent=rows.length;
   let totalAttempts=0, done=0, latestScores=[];
-  rows.forEach(s=>{const x=statsFor(s,filter);totalAttempts+=x.count;if(x.count) {done++;latestScores.push(Number(x.latest));}});
+  rows.forEach(s=>{
+    const x=statsFor(s,examFilter);
+    totalAttempts+=x.count;
+    if(x.count){done++;latestScores.push(Number(x.latest));}
+  });
   document.getElementById('statDone').textContent=done;
   document.getElementById('statAttempts').textContent=totalAttempts;
   document.getElementById('statAvg').textContent=latestScores.length?(latestScores.reduce((a,b)=>a+b,0)/latestScores.length).toFixed(1):'-';
 
   const tbody=document.getElementById('studentTable');
-  if(!rows.length){tbody.innerHTML='<tr><td colspan="10" class="empty">Chưa có dữ liệu học sinh. Bấm "Tải dữ liệu mới" để cập nhật từ Server.</td></tr>';return}
+  if(!rows.length){tbody.innerHTML='<tr><td colspan="10" class="empty">Không tìm thấy học sinh phù hợp với bộ lọc.</td></tr>';return}
   tbody.innerHTML=rows.map((s,i)=>{
     const x=statsFor(s,filter);
     const names=x.ex.map(e=>e.examTitle).filter(Boolean);
     return `<tr>
       <td>${i+1}</td><td class="name">${esc(s.fullName)}</td><td>${esc(s.gender)}</td>
       <td class="${names.length?'':'muted'}">${names.length?esc(names.join(', ')):'Chưa làm bài'}</td>
-      <td>${x.count||'–'}</td><td class="green">${x.max===null?'–':x.max}</td><td class="red">${x.min===null?'–':x.min}</td>
+      <td>${x.count}</td><td class="green">${x.max===null?'–':x.max}</td><td class="red">${x.min===null?'–':x.min}</td>
       <td class="purple">${x.latest===null?'–':x.latest}</td><td>${x.latestAt?fmtDate(x.latestAt):'–'}</td>
       <td>
         <button class="action edit" title="Sửa" onclick="editStudent('${s.studentId}')">♢</button>
@@ -194,11 +201,18 @@ function render(){
 
 function renderFilter(){
   const el=document.getElementById('examFilter'), old=el.value;
-  el.innerHTML='<option value="">Tất cả bài ôn luyện</option>'+allExamNames().map(x=>`<option>${esc(x)}</option>`).join('');
-  el.value=old;
+  el.innerHTML='<option value="">Tất cả bài ôn luyện</option>'+allExamNames().map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join('');
+  el.value=allExamNames().includes(old)?old:'';
 }
 
-function refresh(){renderFilter();render()}
+function renderClassFilter(){
+  const el=document.getElementById('classFilter'), old=el.value;
+  const classes=allClassNames();
+  el.innerHTML='<option value="">Tất cả lớp</option>'+classes.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join('');
+  el.value=classes.includes(old)?old:'';
+}
+
+function refresh(){renderFilter();renderClassFilter();render()}
 
 function fetchFromCloud(){
   if(!SCRIPT_URL || SCRIPT_URL.includes("DÁN_LINK")) {
@@ -277,12 +291,20 @@ function saveStudent(){
 function editStudent(id){openStudentModal(id)}
 function deleteStudent(id){
   const s=db.students.find(x=>x.studentId===id);if(!s)return;
-  if(confirm(`Xóa học sinh "${s.fullName}" khỏi danh sách trên trình duyệt này? Dữ liệu trong Google Sheet vẫn còn.`)){
+  if(confirm(`Xóa học sinh "${s.fullName}" và toàn bộ kết quả của em khỏi Google Sheet?`)){
     const key=studentKey(s.fullName,s.className);
     if(!deletedStudents.includes(key)) deletedStudents.push(key);
     localStorage.setItem(DELETED_KEY,JSON.stringify(deletedStudents));
+
+    fetch(SCRIPT_URL,{
+      method:'POST',
+      mode:'no-cors',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body:JSON.stringify({action:'deleteStudent',fullName:s.fullName,className:s.className})
+    }).catch(err=>console.error('Không gửi được yêu cầu xóa lên Google Sheet:',err));
+
     db.students=db.students.filter(x=>x.studentId!==id);
-    save();refresh();toast('Đã xóa khỏi danh sách trên trình duyệt này');
+    save();refresh();toast('Đã gửi yêu cầu xóa khỏi Google Sheet');
   }
 }
 
