@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Hành Trình Dũng Sĩ Tin Học Lớp 5</title>
 <style>
-
 *{box-sizing:border-box}
 body{
   margin:0; min-height:100vh; font-family:Nunito,Arial,sans-serif;
@@ -55,7 +54,7 @@ input:focus,select:focus{border-color:#6366f1;box-shadow:0 0 0 3px rgba(99,102,2
 .option:hover{border-color:#818cf8;background:#eef2ff}
 .option.correct{border-color:#10b981;background:#ecfdf5;color:#065f46}
 .option.wrong{border-color:#f43f5e;background:#fff1f2;color:#9f1239}
-.letter{width:29px;height:29px;min-width:29px;border-radius:9px;background:#4f46e5;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px}
+.letter{width:29px;height:29px;min-width:29px;border-radius:99px;background:#4f46e5;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px}
 .choice-list{display:grid;gap:9px}
 .choice{padding:13px;border:2px solid #e2e8f0;border-radius:16px;background:#f8fafc;font-weight:700}
 .choice.selected{border-color:#6366f1;background:#eef2ff}
@@ -90,12 +89,13 @@ input:focus,select:focus{border-color:#6366f1;box-shadow:0 0 0 3px rgba(99,102,2
  .app{padding:10px}.grid2,.options,.matchgrid,.footer-actions{grid-template-columns:1fr}
  .intro,.question{padding:18px}.question{min-height:620px}
 }
-
 </style>
 </head>
 <body>
 <div id="app"></div>
 <script>
+// DÁN LINK GOOGLE WEB APP VÀO ĐÂY SAU KHI TẠO XONG
+const SCRIPT_URL = "DÁN_LINK_WEB_APP_Ở_BƯỚC_1_VÀO_ĐÂY";
 
 const quiz = {
   id:"demo-001",
@@ -121,7 +121,7 @@ const quiz = {
 };
 
 let state = {
-  screen:"intro", name:"", className:"5A1", index:0, lives:3, score:0, correct:0,
+  screen:"intro", name:"", className:"Lớp Năm 1", gender:"Nam", index:0, lives:3, score:0, correct:0,
   answered:false, answerCorrect:null, selected:null, multi:[], binary:{},
   matches:{}, selectedLeft:null, order:[], muted:false
 };
@@ -145,8 +145,8 @@ function renderIntro(){
       <div class="subcard"><b>${quiz.title}</b><br><small>${quiz.questions.length} câu hỏi thử thách · 3 trái tim sinh mệnh</small></div>
       <form id="startForm" class="card form">
         <div class="grid2">
-          <div><label>Khối lớp</label><select id="grade"><option>Khối 5</option></select></div>
-          <div><label>Lớp học</label><select id="className"><option>5A1</option><option>5A2</option><option>5A3</option></select></div>
+          <div><label>Lớp học</label><input id="className" value="Lớp Năm 1" required></div>
+          <div><label>Giới tính</label><select id="gender"><option>Nam</option><option>Nữ</option><option>Khác</option></select></div>
         </div>
         <div style="margin-top:14px"><label>Họ và tên dũng sĩ</label><input id="studentName" placeholder="Nhập họ và tên..." required></div>
         <div id="startError"></div>
@@ -159,7 +159,10 @@ function renderIntro(){
     e.preventDefault();
     const name=document.getElementById("studentName").value.trim();
     if(!name){document.getElementById("startError").innerHTML='<div class="error">Vui lòng nhập họ và tên.</div>';return}
-    state.name=name;state.className=document.getElementById("className").value;startExam();
+    state.name=name;
+    state.className=document.getElementById("className").value.trim();
+    state.gender=document.getElementById("gender").value;
+    startExam();
   };
   document.getElementById("muteBtn").onclick=()=>{state.muted=!state.muted;document.getElementById("muteBtn").textContent=state.muted?"🔇 Âm thanh: Tắt":"🔊 Âm thanh: Bật"};
 }
@@ -181,7 +184,7 @@ function answer(correct){
   render();
 }
 function next(){
-  if(state.lives<=0){state.screen="failed";render();return}
+  if(state.lives<=0){saveResult();state.screen="failed";render();return}
   if(state.index+1>=quiz.questions.length){saveResult();state.screen="result";render();return}
   state.index++;prepareQuestion();render();
 }
@@ -199,7 +202,7 @@ function renderExam(){
    ${!state.answered?'<button class="btn primary full action" id="submitMulti">Xác nhận các đáp án đã chọn</button>':""}`;
  } else if(q.type==="matching"){
    const rights=q.pairs.map(x=>x[1]).sort();
-   body=`<div class="matchgrid"><div><b>Cột A</b>${q.pairs.map((p,i)=>`<button class="matchitem ${state.selectedLeft===p[0]?"active":""} ${state.matches[p[0]]?"paired":""}" data-left="${i}">${p[0]} ${state.matches[p[0]]?`→ ${state.matches[p[0]]}`:""}</button>`).join("")}</div><div><b>Cột B</b>${rights.map((r,i)=>`<button class="matchitem" data-right="${i}">${r}</button>`).join("")}</div></div>
+   body=`<div class="matchgrid"><div><b>Cột A</b>${q.pairs.map((p,i)=>`<button class="matchitem ${state.selectedLeft===p[0]?"active":""} ${state.matches[p[0]]?"paired":""}" data-left="${i}">${p[0]}${state.matches[p[0]]?`→ ${state.matches[p[0]]}`:""}</button>`).join("")}</div><div><b>Cột B</b>${rights.map((r,i)=>`<button class="matchitem" data-right="${i}">${r}</button>`).join("")}</div></div>
    ${!state.answered?'<button class="btn primary full action" id="submitMatch">Xác nhận ghép nối</button>':""}`;
    state._rights=rights;
  } else if(q.type==="binary"){
@@ -239,11 +242,28 @@ function bindExam(q){
 function moveOrder(pos,dir){const x=state.order[pos],to=pos+dir;state.order[pos]=state.order[to];state.order[to]=x;render()}
 
 function saveResult(){
- const key="duongSiResults";
- const arr=JSON.parse(localStorage.getItem(key)||"[]");
- arr.push({studentName:state.name,className:state.className,score10:Number((state.correct/quiz.questions.length*10).toFixed(1)),rawScore:state.score,correctCount:state.correct,totalQuestions:quiz.questions.length,completedAt:new Date().toLocaleString("vi-VN")});
- localStorage.setItem(key,JSON.stringify(arr));
+ const score10 = Number((state.correct / quiz.questions.length * 10).toFixed(1));
+ const payload = {
+   fullName: state.name,
+   className: state.className,
+   gender: state.gender,
+   examTitle: quiz.title,
+   score: score10,
+   correctAnswers: state.correct,
+   wrongAnswers: quiz.questions.length - state.correct,
+   submittedAt: new Date().toISOString()
+ };
+
+ if(SCRIPT_URL && !SCRIPT_URL.includes("DÁN_LINK")){
+   fetch(SCRIPT_URL, {
+     method: "POST",
+     mode: "no-cors",
+     headers: { "Content-Type": "application/json" },
+     body: JSON.stringify(payload)
+   }).catch(e=>console.error(e));
+ }
 }
+
 function renderResult(){
  const score10=(state.correct/quiz.questions.length*10).toFixed(1);
  app.innerHTML=`<div class="app"><div class="card result"><div class="trophy">🏆</div><div class="badge">HOÀN THÀNH THỬ THÁCH</div><h1>Chúc mừng ${state.name}!</h1><p>${state.className}</p><div class="scorebig">${score10}/10</div><p><b>${state.correct}/${quiz.questions.length}</b> câu đúng · ${state.score} điểm</p><div class="footer-actions"><button class="btn primary" id="again">🔄 Làm lại</button><button class="btn secondary" id="home">← Về màn hình đầu</button></div></div></div>`;
@@ -255,9 +275,6 @@ function renderFailed(){
  document.getElementById("retry").onclick=()=>startExam();
 }
 render();
-
 </script>
 </body>
 </html>
-
-tuỳ chỉnh lại phần checkbox đáp án, ghép đáp án đúng định dạng bang đầu
