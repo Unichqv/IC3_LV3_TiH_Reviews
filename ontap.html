@@ -19,7 +19,7 @@
     body { background-color: var(--bg); color: var(--text); padding: 20px; display: flex; justify-content: center; }
     .container { width: 100%; max-width: 700px; background: var(--card-bg); padding: 24px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
 
-    /* --- GIAO DIỆN THÔNG TIN HỌC SINH --- */
+    /* --- GIAO DIỆN HỌ TÊN VÀ LỚP (USER INFO) --- */
     .user-card {
       display: flex;
       justify-content: space-between;
@@ -29,27 +29,10 @@
       padding: 16px 20px;
       border-radius: 12px;
       margin-bottom: 24px;
-      gap: 15px;
     }
-    .user-info { flex: 1; }
-    .user-info h2 { font-size: 1.1rem; font-weight: 700; margin-bottom: 8px; }
-    
-    /* Thiết kế ô chọn Lớp (Dropdown) */
-    .class-select-wrapper { display: flex; align-items: center; gap: 8px; font-size: 0.95rem; }
-    .class-select {
-      padding: 6px 12px;
-      border-radius: 8px;
-      border: none;
-      background: rgba(255, 255, 255, 0.9);
-      color: var(--text);
-      font-weight: 600;
-      font-size: 0.9rem;
-      cursor: pointer;
-      outline: none;
-    }
-    .class-select:focus { background: #ffffff; box-shadow: 0 0 0 2px #c7d2fe; }
-
-    .score-badge { background: rgba(255,255,255,0.2); padding: 8px 14px; border-radius: 20px; font-weight: bold; white-space: nowrap; }
+    .user-info h2 { font-size: 1.2rem; font-weight: 700; margin-bottom: 4px; }
+    .user-info p { font-size: 0.9rem; opacity: 0.9; }
+    .score-badge { background: rgba(255,255,255,0.2); padding: 8px 14px; border-radius: 20px; font-weight: bold; }
 
     /* --- GIAO DIỆN HÀNH TRÌNH (ROADMAP PROGRESS) --- */
     .roadmap { display: flex; justify-content: space-between; position: relative; margin: 20px 0 30px 0; }
@@ -95,40 +78,32 @@
 <div class="container">
   
   <!-- =========================================================
-       1. KHU VỰC THÔNG TIN HỌ TÊN VÀ LỚP (DROPDOWN CHỌN LỚP)
+       1. KHU VỰC THÔNG TIN HỌ TÊN VÀ LỚP (TÙY CHỈNH TẠI ĐÂY)
   ========================================================= -->
   <div class="user-card">
     <div class="user-info">
+      <!-- Thay đổi Họ tên và Lớp tại đây -->
       <h2 id="user-name">Họ và tên: Hồ Quốc Vương</h2>
-      
-      <!-- DROPDOWN CHỌN LỚP NĂM 1 -> NĂM 6 -->
-      <div class="class-select-wrapper">
-        <label for="user-class-select">Chọn Lớp:</label>
-        <select id="user-class-select" class="class-select">
-          <option value="Lớp Năm 1">Lớp Năm 1</option>
-          <option value="Lớp Năm 2">Lớp Năm 2</option>
-          <option value="Lớp Năm 3">Lớp Năm 3</option>
-          <option value="Lớp Năm 4">Lớp Năm 4</option>
-          <option value="Lớp Năm 5">Lớp Năm 5</option>
-          <option value="Lớp Năm 6">Lớp Năm 6</option>
-        </select>
-      </div>
+      <p id="user-class">Lớp: Khóa học lập trình Data Science</p>
     </div>
-
     <div class="score-badge">
-      Thứ tự: <span id="current-step-text">1</span>/<span id="total-steps-text">3</span>
+      Thứ tự: <span id="current-step-text">1</span>/<span id="total-steps-text">5</span>
     </div>
   </div>
 
   <!-- Tiến trình dạng Hành Trình (Roadmap) -->
-  <div class="roadmap" id="roadmap-container"></div>
+  <div class="roadmap" id="roadmap-container">
+    <!-- Cột mốc câu hỏi sẽ tự động sinh ra ở đây -->
+  </div>
 
   <!-- =========================================================
        2. KHU VỰC CÂU HỎI VÀ ĐÁP ÁN
   ========================================================= -->
   <div id="quiz-box">
     <div class="question-title" id="question-text">Đang tải câu hỏi...</div>
-    <div class="options-grid" id="options-container"></div>
+    <div class="options-grid" id="options-container">
+      <!-- Danh sách câu trả lời sẽ hiển thị tại đây -->
+    </div>
     <div class="actions">
       <button class="btn-next" id="next-btn" onclick="nextQuestion()" disabled>Thách thức tiếp theo</button>
     </div>
@@ -138,19 +113,19 @@
 
 <script>
   // =========================================================
-  // 3. ĐƯỜNG DẪN WEB APP GOOGLE APPS SCRIPT
+  // 3. ĐƯỜNG DẪN WEB APP (DÁN LINK GOOGLE APPS SCRIPT VÀO ĐÂY)
   // =========================================================
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwfu_GYJpkin4655KGvMW1C96HIR42QJs26A3web-7D0avwU3ZGD7sXcXkTREP0Tlek1g/exec";
 
   // =========================================================
-  // 4. BỘ CÂU HỎI (TÙY CHỈNH CÂU HỎI TẠI ĐÂY)
+  // 4. BỘ CÂU HỎI (DÁN / TÙY CHỈNH BỘ CÂU HỎI CỦA BẠN VÀO ĐÂY)
   // =========================================================
   const questions = [
     {
       id: 1,
       question: "Câu 1: Ngôn ngữ nào thường được dùng phổ biến nhất cho Data Science?",
       options: ["PHP", "Python", "HTML", "C++"],
-      answer: 1 
+      answer: 1 // Chỉ số của đáp án đúng (0: PHP, 1: Python, 2: HTML, 3: C++)
     },
     {
       id: 2,
@@ -164,17 +139,20 @@
       options: ["console.print()", "System.out.println()", "Logger.log()", "echo()"],
       answer: 2
     }
+    // Thêm các câu hỏi tiếp theo vào đây theo đúng định dạng trên...
   ];
 
   let currentQuestionIndex = 0;
   let selectedOptionIndex = null;
   let userAnswers = [];
 
+  // Khởi tạo giao diện
   function initQuiz() {
     renderRoadmap();
     loadQuestion();
   }
 
+  // Vẽ các cột mốc hành trình
   function renderRoadmap() {
     const roadmapEl = document.getElementById("roadmap-container");
     document.getElementById("total-steps-text").innerText = questions.length;
@@ -189,6 +167,7 @@
     });
   }
 
+  // Tải nội dung câu hỏi hiện tại
   function loadQuestion() {
     const currentQ = questions[currentQuestionIndex];
     document.getElementById("question-text").innerText = currentQ.question;
@@ -203,6 +182,7 @@
       const btn = document.createElement("button");
       btn.className = "option-btn";
       btn.innerText = optText;
+      // Sự kiện khi người dùng click chọn đáp án
       btn.onclick = () => selectOption(index);
       optionsContainer.appendChild(btn);
     });
@@ -211,28 +191,42 @@
   }
 
   // =========================================================
-  // 5. LOGIC CHỌN ĐÁP ÁN
+  // 5. LOGIC TÙY CHỈNH KHI CHỌN ĐÁP ÁN (OPTION SELECTION)
   // =========================================================
   function selectOption(index) {
     selectedOptionIndex = index;
     const buttons = document.querySelectorAll(".option-btn");
     
+    // Bỏ chọn tất cả các nút khác
     buttons.forEach((btn, idx) => {
       btn.classList.remove("selected");
       if (idx === index) {
-        btn.classList.add("selected");
+        btn.classList.add("selected"); // Đánh dấu nút được chọn
       }
     });
 
+    /* --- NẾU BẠN MUỐN HIỂN THỊ ĐÚNG/SAI NGAY LẬP TỨC (UNCOMMENT ĐOẠN DƯỚI) ---
+    const correctIndex = questions[currentQuestionIndex].answer;
+    buttons.forEach((btn, idx) => {
+      btn.disabled = true; // Khóa không cho chọn lại
+      if (idx === correctIndex) btn.classList.add("correct");
+      if (idx === index && index !== correctIndex) btn.classList.add("wrong");
+    });
+    ------------------------------------------------------------------ */
+
+    // Mở khóa nút Tiếp theo
     document.getElementById("next-btn").disabled = false;
   }
 
+  // Chuyển sang câu hỏi tiếp theo
   function nextQuestion() {
+    // Lưu kết quả của người dùng
     userAnswers.push({
       questionId: questions[currentQuestionIndex].id,
       selected: selectedOptionIndex
     });
 
+    // Đánh dấu hoàn thành bước hiện tại trên Hành trình
     document.getElementById(`step-${currentQuestionIndex}`).classList.remove("active");
     document.getElementById(`step-${currentQuestionIndex}`).classList.add("completed");
 
@@ -245,6 +239,7 @@
     }
   }
 
+  // Cập nhật trạng thái hiển thị của các bước trên Hành trình
   function updateRoadmapUI() {
     const currentStepEl = document.getElementById(`step-${currentQuestionIndex}`);
     if (currentStepEl) {
@@ -252,35 +247,31 @@
     }
   }
 
-  // =========================================================
-  // 6. TỰ ĐỘNG LẤY LỚP ĐÃ CHỌN TỪ DROPDOWN VÀ GỬI DỮ LIỆU
-  // =========================================================
+  // Hoàn thành bài trắc nghiệm
   function finishQuiz() {
-    // Lấy giá trị lớp học sinh đã chọn từ ô Dropdown
-    const selectedClass = document.getElementById("user-class-select").value;
-
     document.getElementById("quiz-box").innerHTML = `
       <div style="text-align: center; padding: 20px 0;">
         <h2 style="color: var(--success); margin-bottom: 10px;">🎉 Chúc mừng bạn đã hoàn thành hành trình!</h2>
-        <p>Kết quả của bạn thuộc <strong>${selectedClass}</strong> đã được ghi nhận.</p>
+        <p>Kết quả đã được ghi nhận vào hệ thống.</p>
       </div>
     `;
 
-    // Gửi dữ liệu Họ tên, Lớp (đã chọn) và Đáp án lên Google Sheets
-    if (SCRIPT_URL) {
+    // Gửi dữ liệu về Google Sheets thông qua Web App URL
+    if (SCRIPT_URL && SCRIPT_URL !== "DÁN_LINK_WEB_APP_Ở_BƯỚC_1_VÀO_ĐÂY") {
       fetch(SCRIPT_URL, {
         method: "POST",
         mode: "no-cors",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: "Hồ Quốc Vương",
-          className: selectedClass, // Lớp được lấy từ Dropdown
+          className: "Lớp Data Science",
           answers: userAnswers
         })
       });
     }
   }
 
+  // Chạy ứng dụng khi trang web tải xong
   window.onload = initQuiz;
 </script>
 
