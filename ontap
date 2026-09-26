@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Hành Trình Dũng Sĩ Tin Học Lớp 5</title>
+<style>
+
+*{box-sizing:border-box}
+body{
+  margin:0; min-height:100vh; font-family:Nunito,Arial,sans-serif;
+  background:linear-gradient(135deg,#eef2ff,#f5f3ff 48%,#ecfdf5);
+  color:#0f172a;
+}
+button,input,select{font:inherit}
+button{cursor:pointer}
+.app{min-height:100vh;padding:22px}
+.shell{max-width:980px;margin:auto}
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:28px;box-shadow:0 15px 45px rgba(15,23,42,.10)}
+.intro{max-width:680px;margin:25px auto;padding:30px;text-align:center}
+.badge{display:inline-flex;padding:7px 15px;border-radius:999px;background:#eef2ff;color:#4338ca;border:1px solid #c7d2fe;font-weight:900;font-size:12px;letter-spacing:.08em}
+.logo{width:84px;height:84px;border-radius:28px;margin:18px auto 12px;display:flex;align-items:center;justify-content:center;font-size:42px;color:#fff;background:linear-gradient(135deg,#4f46e5,#7c3aed);box-shadow:0 14px 28px rgba(79,70,229,.25)}
+h1{font-size:clamp(28px,5vw,46px);line-height:1.05;margin:8px 0;font-weight:900}
+.gradient{background:linear-gradient(90deg,#4f46e5,#7c3aed);-webkit-background-clip:text;color:transparent}
+.subcard{background:#fff;border:1px solid #e2e8f0;border-radius:20px;padding:14px;margin:20px 0;color:#64748b}
+.form{padding:22px;text-align:left;margin-top:18px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+label{display:block;font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.06em;margin-bottom:7px;color:#334155}
+input,select{width:100%;padding:13px 14px;border:1px solid #cbd5e1;background:#f8fafc;border-radius:13px;outline:none;font-weight:700}
+input:focus,select:focus{border-color:#6366f1;box-shadow:0 0 0 3px rgba(99,102,241,.13)}
+.btn{border:0;border-radius:15px;padding:14px 18px;font-weight:900;transition:.15s}
+.btn:hover{transform:translateY(-1px)}
+.primary{background:#4f46e5;color:#fff}
+.success{background:#059669;color:#fff}
+.danger{background:#e11d48;color:#fff}
+.secondary{background:#f1f5f9;color:#334155}
+.full{width:100%}
+.error{margin-top:8px;background:#fff1f2;border:1px solid #fecdd3;color:#be123c;padding:10px;border-radius:12px;font-size:13px;font-weight:800}
+.sound{margin-top:15px;border:0;background:#f1f5f9;padding:9px 14px;border-radius:12px;font-weight:800}
+.exam{max-width:820px;margin:auto}
+.hud{padding:14px 16px;margin-bottom:12px}
+.hudrow{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.pills{display:flex;gap:8px;flex-wrap:wrap}
+.pill{padding:7px 12px;border-radius:12px;font-weight:900;font-size:13px}
+.life{background:#fff1f2;color:#be123c;border:1px solid #fecdd3}
+.score{background:#fffbeb;color:#92400e;border:1px solid #fde68a}
+.combo{background:#4f46e5;color:#fff}
+.progress{height:9px;background:#f1f5f9;border-radius:99px;overflow:hidden;margin-top:12px}
+.progress>div{height:100%;background:linear-gradient(90deg,#6366f1,#34d399);transition:.3s}
+.question{position:relative;padding:25px;min-height:540px}
+.category{color:#4f46e5;font-size:12px;font-weight:900;text-transform:uppercase}
+.question h2{font-size:clamp(20px,3vw,28px);line-height:1.25;margin:12px 0 22px}
+.options{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.option{padding:16px;border:2px solid #e2e8f0;border-radius:18px;background:#f8fafc;text-align:left;font-weight:800;display:flex;gap:12px;align-items:flex-start}
+.option:hover{border-color:#818cf8;background:#eef2ff}
+.option.correct{border-color:#10b981;background:#ecfdf5;color:#065f46}
+.option.wrong{border-color:#f43f5e;background:#fff1f2;color:#9f1239}
+.letter{width:29px;height:29px;min-width:29px;border-radius:9px;background:#4f46e5;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px}
+.choice-list{display:grid;gap:9px}
+.choice{padding:13px;border:2px solid #e2e8f0;border-radius:16px;background:#f8fafc;font-weight:700}
+.choice.selected{border-color:#6366f1;background:#eef2ff}
+.action{margin-top:16px}
+.feedback{position:absolute;inset:0;background:rgba(255,255,255,.96);backdrop-filter:blur(8px);z-index:5;border-radius:26px;padding:28px;display:flex;flex-direction:column;justify-content:space-between}
+.feedbackbox{margin:auto 0}
+.status{padding:17px;border:2px solid;border-radius:18px;font-weight:900}
+.status.ok{background:#ecfdf5;border-color:#86efac;color:#065f46}
+.status.bad{background:#fff1f2;border-color:#fda4af;color:#9f1239}
+.explain{margin-top:12px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:17px;padding:17px;line-height:1.6}
+.matchgrid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.matchitem{padding:13px;border:2px solid #e2e8f0;border-radius:15px;background:#f8fafc;margin-bottom:8px;font-weight:800}
+.matchitem.active{border-color:#6366f1;background:#eef2ff}
+.matchitem.paired{border-color:#86efac;background:#ecfdf5}
+.binary{display:flex;gap:8px}
+.binary button{border:1px solid #cbd5e1;border-radius:11px;padding:8px 11px;background:#fff;font-weight:900}
+.binary .yes.active{background:#059669;color:#fff}.binary .no.active{background:#e11d48;color:#fff}
+.orderitem{display:flex;align-items:center;justify-content:space-between;padding:13px;border:2px solid #e2e8f0;border-radius:15px;background:#f8fafc;margin:8px 0}
+.arrows button{border:1px solid #cbd5e1;background:#fff;border-radius:8px;padding:4px 8px}
+.hotspot{position:relative;min-height:230px;border-radius:18px;background:linear-gradient(135deg,#e0e7ff,#dbeafe);border:2px solid #c7d2fe;overflow:hidden}
+.browser{position:absolute;inset:18px;background:#fff;border-radius:12px;box-shadow:0 8px 25px rgba(15,23,42,.15)}
+.browser-top{height:42px;background:#e2e8f0;border-radius:12px 12px 0 0;padding:8px}
+.address{margin-left:35px;background:#fff;border-radius:8px;height:25px;padding:4px 12px;font-size:12px;color:#64748b}
+.hotspot-zone{position:absolute;border:3px solid transparent;border-radius:8px;transition:.15s}
+.hotspot-zone:hover,.hotspot-zone.selected{border-color:#6366f1;background:rgba(99,102,241,.12)}
+.zone1{left:23%;top:24%;width:60%;height:18%}.zone2{left:8%;top:4%;width:30%;height:17%}
+.result{max-width:700px;margin:30px auto;padding:30px;text-align:center}
+.trophy{font-size:70px}
+.scorebig{font-size:56px;font-weight:900;color:#4f46e5}
+.footer-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}
+@media(max-width:650px){
+ .app{padding:10px}.grid2,.options,.matchgrid,.footer-actions{grid-template-columns:1fr}
+ .intro,.question{padding:18px}.question{min-height:620px}
+}
+
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+
+const quiz = {
+  id:"demo-001",
+  title:"Hành Trình Dũng Sĩ - Thế Giới Công Nghệ Số",
+  questions:[
+    {type:"multiple-choice",category:"Thiết bị",text:"Thiết bị nào thường dùng để lưu trữ dữ liệu lâu dài?",options:["RAM","SSD","CPU","GPU"],correct:1,explain:"SSD là thiết bị lưu trữ dữ liệu lâu dài. RAM là bộ nhớ tạm thời.",tip:"SSD = nơi lưu dữ liệu."},
+    {type:"multiple-select",category:"Điện toán đám mây",text:"Những đặc điểm nào phù hợp với lưu trữ đám mây?",options:["Truy cập qua Internet","Có thể chia sẻ tệp","Chỉ dùng được trên một máy","Có thể đồng bộ dữ liệu"],multipleCorrect:[0,1,3],explain:"Lưu trữ đám mây hỗ trợ truy cập, chia sẻ và đồng bộ dữ liệu qua Internet."},
+    {type:"matching",category:"Thuật ngữ",text:"Nối thuật ngữ với ý nghĩa phù hợp.",pairs:[
+      ["URL","Địa chỉ của tài nguyên trên Web"],
+      ["IP","Địa chỉ của thiết bị trong mạng"],
+      ["GPS","Hệ thống định vị toàn cầu"]
+    ],explain:"URL xác định tài nguyên Web; IP xác định thiết bị trong mạng; GPS dùng cho định vị."},
+    {type:"binary",category:"Đúng / Sai",text:"Đánh giá các nhận định sau.",items:[
+      ["Cloud storage có thể truy cập qua Internet.",true],
+      ["CPU là thiết bị dùng để lưu trữ tệp lâu dài.",false],
+      ["GPS có thể hỗ trợ xác định vị trí.",true]
+    ],explain:"Các nhận định trên lần lượt là Đúng, Sai và Đúng."},
+    {type:"process-order",category:"Quy trình",text:"Sắp xếp quy trình đăng nhập hệ thống theo thứ tự hợp lý.",steps:[
+      "Mở trang đăng nhập","Nhập tên tài khoản","Nhập mật khẩu","Nhấn nút Đăng nhập"
+    ],correct:[0,1,2,3],explain:"Đây là trình tự thao tác đăng nhập cơ bản."},
+    {type:"image-click",category:"Tương tác hình ảnh",text:"Hãy chọn vùng Thanh Địa Chỉ (Address Bar) trên trình duyệt.",explain:"Thanh địa chỉ là nơi nhập URL của trang Web."}
+  ]
+};
+
+let state = {
+  screen:"intro", name:"", className:"5A1", index:0, lives:3, score:0, correct:0,
+  answered:false, answerCorrect:null, selected:null, multi:[], binary:{},
+  matches:{}, selectedLeft:null, order:[], muted:false
+};
+
+const app=document.getElementById("app");
+
+function render(){
+  if(state.screen==="intro") renderIntro();
+  else if(state.screen==="playing") renderExam();
+  else if(state.screen==="result") renderResult();
+  else renderFailed();
+}
+
+function renderIntro(){
+  app.innerHTML=`
+  <div class="app"><div class="shell">
+    <div class="card intro">
+      <div class="badge">ĐẤU TRƯỜNG TRI THỨC SỐ</div>
+      <div class="logo">🚀</div>
+      <h1>HÀNH TRÌNH DŨNG SĨ<br><span class="gradient">THẾ GIỚI CÔNG NGHỆ SỐ</span></h1>
+      <div class="subcard"><b>${quiz.title}</b><br><small>${quiz.questions.length} câu hỏi thử thách · 3 trái tim sinh mệnh</small></div>
+      <form id="startForm" class="card form">
+        <div class="grid2">
+          <div><label>Khối lớp</label><select id="grade"><option>Khối 5</option></select></div>
+          <div><label>Lớp học</label><select id="className"><option>5A1</option><option>5A2</option><option>5A3</option></select></div>
+        </div>
+        <div style="margin-top:14px"><label>Họ và tên dũng sĩ</label><input id="studentName" placeholder="Nhập họ và tên..." required></div>
+        <div id="startError"></div>
+        <button class="btn primary full" style="margin-top:15px">▶ BẮT ĐẦU CHƠI NGAY!</button>
+      </form>
+      <button class="sound" id="muteBtn">🔊 Âm thanh: Bật</button>
+    </div>
+  </div></div>`;
+  document.getElementById("startForm").onsubmit=e=>{
+    e.preventDefault();
+    const name=document.getElementById("studentName").value.trim();
+    if(!name){document.getElementById("startError").innerHTML='<div class="error">Vui lòng nhập họ và tên.</div>';return}
+    state.name=name;state.className=document.getElementById("className").value;startExam();
+  };
+  document.getElementById("muteBtn").onclick=()=>{state.muted=!state.muted;document.getElementById("muteBtn").textContent=state.muted?"🔇 Âm thanh: Tắt":"🔊 Âm thanh: Bật"};
+}
+
+function startExam(){
+  state.screen="playing";state.index=0;state.lives=3;state.score=0;state.correct=0;state.answered=false;
+  prepareQuestion();render();
+}
+function prepareQuestion(){
+  state.answered=false;state.answerCorrect=null;state.selected=null;state.multi=[];state.binary={};state.matches={};state.selectedLeft=null;
+  const q=quiz.questions[state.index];
+  state.order=q.type==="process-order"?q.steps.map((_,i)=>i).sort(()=>Math.random()-.5):[];
+}
+function answer(correct){
+  if(state.answered)return;
+  state.answered=true;state.answerCorrect=correct;
+  if(correct){state.correct++;state.score+=100+(state.correct>1?state.correct*15:0)}
+  else state.lives=Math.max(0,state.lives-1);
+  render();
+}
+function next(){
+  if(state.lives<=0){state.screen="failed";render();return}
+  if(state.index+1>=quiz.questions.length){saveResult();state.screen="result";render();return}
+  state.index++;prepareQuestion();render();
+}
+
+function renderExam(){
+ const q=quiz.questions[state.index];
+ let body="";
+ if(q.type==="multiple-choice"){
+   body=`<div class="options">${q.options.map((o,i)=>{
+     let cls="option";if(state.answered&&i===q.correct)cls+=" correct";else if(state.answered&&i===state.selected)cls+=" wrong";
+     return `<button class="${cls}" data-i="${i}" ${state.answered?"disabled":""}><span class="letter">${"ABCDEF"[i]}</span><span>${o}</span></button>`
+   }).join("")}</div>`;
+ } else if(q.type==="multiple-select"){
+   body=`<div class="choice-list">${q.options.map((o,i)=>`<button class="choice ${state.multi.includes(i)?"selected":""}" data-multi="${i}" ${state.answered?"disabled":""}>${state.multi.includes(i)?"☑":"☐"} ${o}</button>`).join("")}</div>
+   ${!state.answered?'<button class="btn primary full action" id="submitMulti">Xác nhận các đáp án đã chọn</button>':""}`;
+ } else if(q.type==="matching"){
+   const rights=q.pairs.map(x=>x[1]).sort();
+   body=`<div class="matchgrid"><div><b>Cột A</b>${q.pairs.map((p,i)=>`<button class="matchitem ${state.selectedLeft===p[0]?"active":""} ${state.matches[p[0]]?"paired":""}" data-left="${i}">${p[0]} ${state.matches[p[0]]?`→ ${state.matches[p[0]]}`:""}</button>`).join("")}</div><div><b>Cột B</b>${rights.map((r,i)=>`<button class="matchitem" data-right="${i}">${r}</button>`).join("")}</div></div>
+   ${!state.answered?'<button class="btn primary full action" id="submitMatch">Xác nhận ghép nối</button>':""}`;
+   state._rights=rights;
+ } else if(q.type==="binary"){
+   body=q.items.map((it,i)=>`<div class="choice" style="display:flex;justify-content:space-between;gap:10px;align-items:center"><span>${i+1}. ${it[0]}</span><span class="binary"><button class="yes ${state.binary[i]===true?"active":""}" data-bin="${i}:1">CÓ / ĐÚNG</button><button class="no ${state.binary[i]===false?"active":""}" data-bin="${i}:0">KHÔNG / SAI</button></span></div>`).join("")+
+   (!state.answered?'<button class="btn primary full action" id="submitBin">Xác nhận đánh giá</button>':"");
+ } else if(q.type==="process-order"){
+   body=state.order.map((idx,pos)=>`<div class="orderitem"><span><b>${pos+1}.</b> ${q.steps[idx]}</span><span class="arrows"><button data-up="${pos}" ${pos===0?"disabled":""}>▲</button><button data-down="${pos}" ${pos===state.order.length-1?"disabled":""}>▼</button></span></div>`).join("")+
+   (!state.answered?'<button class="btn primary full action" id="submitOrder">Xác nhận thứ tự sắp xếp</button>':"");
+ } else {
+   body=`<div class="hotspot"><div class="browser"><div class="browser-top"><div class="address">https://www.example.com</div></div></div>
+     <button class="hotspot-zone zone1 ${state.selected==="address"?"selected":""}" data-hot="address" aria-label="Thanh địa chỉ"></button>
+     <button class="hotspot-zone zone2 ${state.selected==="tab"?"selected":""}" data-hot="tab" aria-label="Tab"></button></div>`;
+ }
+ app.innerHTML=`<div class="app"><div class="exam">
+   <div class="card hud"><div class="hudrow"><div class="pills"><span class="pill life">❤️ ${state.lives}</span><span class="pill score">⭐ ${state.score}</span>${state.correct>=2?`<span class="pill combo">⚡ Combo x${state.correct}</span>`:""}</div><div><b>${q.category}</b><br><small>Câu ${state.index+1} / ${quiz.questions.length}</small></div></div><div class="progress"><div style="width:${((state.index+1)/quiz.questions.length)*100}%"></div></div></div>
+   <div class="card question"><div><div class="category">${q.category}</div><h2>${q.text}</h2>${body}</div>
+   ${state.answered?`<div class="feedback"><div class="feedbackbox"><div class="status ${state.answerCorrect?"ok":"bad"}">${state.answerCorrect?"🎉 Chính xác! Xuất sắc lắm!":"💡 Chưa chính xác rồi!"}<div style="font-size:13px;margin-top:5px">${state.answerCorrect?"+ điểm thưởng":"Bị trừ 1 sinh mệnh"}</div></div><div class="explain"><b>Giải thích chi tiết:</b><br>${q.explain}</div></div><button class="btn ${state.lives<=0?"danger":state.index+1>=quiz.questions.length?"success":"primary"} full" id="nextBtn">${state.lives<=0?"Xem thông báo hết tim":state.index+1>=quiz.questions.length?"Xem kết quả & giấy khen":"Câu tiếp theo →"}</button></div>`:""}
+   </div></div></div>`;
+ bindExam(q);
+}
+
+function bindExam(q){
+ document.querySelectorAll("[data-i]").forEach(b=>b.onclick=()=>{state.selected=+b.dataset.i;answer(state.selected===q.correct)});
+ document.querySelectorAll("[data-multi]").forEach(b=>b.onclick=()=>{const i=+b.dataset.multi;state.multi=state.multi.includes(i)?state.multi.filter(x=>x!==i):[...state.multi,i];render()});
+ const sm=document.getElementById("submitMulti");if(sm)sm.onclick=()=>answer([...state.multi].sort().join(",")===q.multipleCorrect.slice().sort().join(","));
+ document.querySelectorAll("[data-left]").forEach(b=>b.onclick=()=>{state.selectedLeft=q.pairs[+b.dataset.left][0];render()});
+ document.querySelectorAll("[data-right]").forEach(b=>b.onclick=()=>{if(!state.selectedLeft)return;state.matches[state.selectedLeft]=state._rights[+b.dataset.right];state.selectedLeft=null;render()});
+ const sM=document.getElementById("submitMatch");if(sM)sM.onclick=()=>answer(q.pairs.every(p=>state.matches[p[0]]===p[1]));
+ document.querySelectorAll("[data-bin]").forEach(b=>b.onclick=()=>{let [i,v]=b.dataset.bin.split(":");state.binary[i]=v==="1";render()});
+ const sB=document.getElementById("submitBin");if(sB)sB.onclick=()=>answer(q.items.every((x,i)=>state.binary[i]===x[1]));
+ document.querySelectorAll("[data-up]").forEach(b=>b.onclick=()=>moveOrder(+b.dataset.up,-1));
+ document.querySelectorAll("[data-down]").forEach(b=>b.onclick=()=>moveOrder(+b.dataset.down,1));
+ const sO=document.getElementById("submitOrder");if(sO)sO.onclick=()=>answer(state.order.every((v,i)=>v===q.correct[i]));
+ document.querySelectorAll("[data-hot]").forEach(b=>b.onclick=()=>{state.selected=b.dataset.hot;answer(b.dataset.hot==="address")});
+ const n=document.getElementById("nextBtn");if(n)n.onclick=next;
+}
+function moveOrder(pos,dir){const x=state.order[pos],to=pos+dir;state.order[pos]=state.order[to];state.order[to]=x;render()}
+
+function saveResult(){
+ const key="duongSiResults";
+ const arr=JSON.parse(localStorage.getItem(key)||"[]");
+ arr.push({studentName:state.name,className:state.className,score10:Number((state.correct/quiz.questions.length*10).toFixed(1)),rawScore:state.score,correctCount:state.correct,totalQuestions:quiz.questions.length,completedAt:new Date().toLocaleString("vi-VN")});
+ localStorage.setItem(key,JSON.stringify(arr));
+}
+function renderResult(){
+ const score10=(state.correct/quiz.questions.length*10).toFixed(1);
+ app.innerHTML=`<div class="app"><div class="card result"><div class="trophy">🏆</div><div class="badge">HOÀN THÀNH THỬ THÁCH</div><h1>Chúc mừng ${state.name}!</h1><p>${state.className}</p><div class="scorebig">${score10}/10</div><p><b>${state.correct}/${quiz.questions.length}</b> câu đúng · ${state.score} điểm</p><div class="footer-actions"><button class="btn primary" id="again">🔄 Làm lại</button><button class="btn secondary" id="home">← Về màn hình đầu</button></div></div></div>`;
+ document.getElementById("again").onclick=()=>{startExam()};
+ document.getElementById("home").onclick=()=>{state.screen="intro";render()};
+}
+function renderFailed(){
+ app.innerHTML=`<div class="app"><div class="card result"><div class="trophy">💔</div><div class="badge" style="color:#be123c;background:#fff1f2;border-color:#fecdd3">HẾT 3 TRÁI TIM SINH MỆNH</div><h1>Bạn đã trả lời sai 3 lần!</h1><p>Hãy ôn lại kiến thức và thực hiện lại thử thách từ đầu nhé.</p><p><b>${state.name}</b> · ${state.className}</p><button class="btn danger full" id="retry">↻ BẮT ĐẦU LÀM LẠI TỪ ĐẦU</button></div></div>`;
+ document.getElementById("retry").onclick=()=>startExam();
+}
+render();
+
+</script>
+</body>
+</html>
+
+tuỳ chỉnh lại phần checkbox đáp án, ghép đáp án đúng định dạng bang đầu
