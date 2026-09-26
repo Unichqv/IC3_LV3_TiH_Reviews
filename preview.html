@@ -149,6 +149,7 @@ function save(){localStorage.setItem(KEY,JSON.stringify(db));}
 function studentKey(name,className){return JSON.stringify([String(name||'').trim().toLowerCase(),String(className||'').trim().toLowerCase()]);}
 function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));}
 function fmtDate(s){if(!s)return '-';const d=new Date(s);return isNaN(d)?s:d.toLocaleString('vi-VN',{hour:'2-digit',minute:'2-digit',day:'2-digit',month:'2-digit',year:'numeric'});}
+function fmtScore(value){const score=Number(value);return Number.isFinite(score)?score.toFixed(1):'-';}
 function examsOf(s){return s.exams||[]}
 function allExamNames(){return [...new Set(db.students.flatMap(s=>examsOf(s).map(e=>e.examTitle)).filter(Boolean))]}
 function allClassNames(){
@@ -204,8 +205,8 @@ function render(){
     return `<tr>
       <td>${i+1}</td><td class="name">${esc(s.fullName)}</td>
       <td class="${names.length?'':'muted'}">${names.length?esc(names.join(', ')):'Chưa làm bài'}</td>
-      <td>${x.count}</td><td class="green">${x.max===null?'–':x.max}</td><td class="red">${x.min===null?'–':x.min}</td>
-      <td class="purple">${x.latest===null?'–':x.latest}</td><td>${x.latestAt?fmtDate(x.latestAt):'–'}</td>
+      <td>${x.count}</td><td class="green">${x.max===null?'–':fmtScore(x.max)}</td><td class="red">${x.min===null?'–':fmtScore(x.min)}</td>
+      <td class="purple">${x.latest===null?'–':fmtScore(x.latest)}</td><td>${x.latestAt?fmtDate(x.latestAt):'–'}</td>
       <td>
         <button class="action edit" title="Sửa" onclick="editStudent('${s.studentId}')">♢</button>
         <button class="action view" title="Xem chi tiết" onclick="viewStudent('${s.studentId}')">♧</button>
@@ -351,10 +352,10 @@ function viewStudent(id){
       <div class="mini"><span>Mã học viên</span><b>${esc(s.studentId)}</b></div>
       <div class="mini"><span>Lớp</span><b>${esc(s.className)}</b></div>
       <div class="mini"><span>Số lần làm</span><b>${x.count}</b></div>
-      <div class="mini"><span>Điểm gần nhất</span><b>${x.latest??'-'}</b></div>
+      <div class="mini"><span>Điểm gần nhất</span><b>${x.latest===null?'-':fmtScore(x.latest)}</b></div>
     </div>
     <div style="overflow:auto"><table class="history"><thead><tr><th>Lần</th><th>Bài</th><th>Điểm</th><th>Đúng</th><th>Sai</th><th>Thời gian nộp</th></tr></thead>
-    <tbody>${attempts.length?attempts.map(a=>`<tr><td>${a.attemptNumber}</td><td>${esc(a.examTitle)}</td><td><b>${a.score}</b></td><td>${a.correctAnswers??'-'}</td><td>${a.wrongAnswers??'-'}</td><td>${fmtDate(a.submittedAt)}</td></tr>`).join(''):'<tr><td colspan="6">Chưa có lịch sử.</td></tr>'}</tbody></table></div>`;
+    <tbody>${attempts.length?attempts.map(a=>`<tr><td>${a.attemptNumber}</td><td>${esc(a.examTitle)}</td><td><b>${fmtScore(a.score)}</b></td><td>${a.correctAnswers??'-'}</td><td>${a.wrongAnswers??'-'}</td><td>${fmtDate(a.submittedAt)}</td></tr>`).join(''):'<tr><td colspan="6">Chưa có lịch sử.</td></tr>'}</tbody></table></div>`;
   document.getElementById('detailModal').classList.add('show');
 }
 
