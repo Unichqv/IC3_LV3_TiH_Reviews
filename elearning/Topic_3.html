@@ -932,7 +932,7 @@
     let state = {
       screen: "intro",
       name: "",
-      className: "Năm 1. Năm 2, Năm 3, Năm 4, Năm 5, Năm 6",
+      className: "",
       gender: "Không cung cấp",
       index: 0,
       lives: 3,
@@ -952,23 +952,52 @@
 
     const app = document.getElementById("app");
 
-    function getAvailableClasses() {
-      const classes = new Set();
-      try {
-        const savedClasses = JSON.parse(localStorage.getItem("tinHocClasses_v1") || "[]");
-        savedClasses.forEach(name => { if (typeof name === "string" && name.trim()) classes.add(name.trim()); });
+   function getAvailableClasses() {
+  const classes = new Set();
 
-        const db = JSON.parse(localStorage.getItem("tinHocStudentData_v1") || "null");
-        if (db?.classInfo?.name) classes.add(db.classInfo.name.trim());
-        (db?.students || []).forEach(student => {
-          if (student.className?.trim()) classes.add(student.className.trim());
-        });
-      } catch (error) {
-        console.error("Không thể đọc danh sách lớp đã lưu:", error);
+  try {
+    const savedClasses = JSON.parse(
+      localStorage.getItem("tinHocClasses_v1") || "[]"
+    );
+
+    savedClasses.forEach(name => {
+      if (typeof name === "string" && name.trim()) {
+        classes.add(name.trim());
       }
-      if (!classes.size) classes.add("Lớp Năm 1");
-      return [...classes];
+    });
+
+    const db = JSON.parse(
+      localStorage.getItem("tinHocStudentData_v1") || "null"
+    );
+
+    if (db?.classInfo?.name) {
+      classes.add(db.classInfo.name.trim());
     }
+
+    (db?.students || []).forEach(student => {
+      if (student.className?.trim()) {
+        classes.add(student.className.trim());
+      }
+    });
+
+  } catch (error) {
+    console.error("Không thể đọc danh sách lớp đã lưu:", error);
+  }
+
+  // Nếu chưa có lớp nào được lưu → tạo danh sách mặc định
+  if (!classes.size) {
+    [
+      "Năm 1",
+      "Năm 2",
+      "Năm 3",
+      "Năm 4",
+      "Năm 5",
+      "Năm 6"
+    ].forEach(name => classes.add(name));
+  }
+
+  return [...classes];
+}
 
     function populateClassOptions() {
       const select = document.getElementById("className");
