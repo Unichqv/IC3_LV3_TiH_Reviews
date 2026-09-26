@@ -86,6 +86,9 @@ input:focus,select:focus{border-color:#6366f1;box-shadow:0 0 0 3px rgba(99,102,2
 .result{max-width:700px;margin:30px auto;padding:30px;text-align:center}
 .trophy{font-size:70px}
 .scorebig{font-size:56px;font-weight:900;color:#4f46e5}
+.result-link{margin-top:12px;padding-top:12px;border-top:1px solid #e0e0e0;font-size:12px;color:#999}
+.result-link a{color:#4f46e5;text-decoration:none;font-weight:700}
+.result-link a:hover{text-decoration:underline}
 .footer-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}
 @media(max-width:650px){
  .app{padding:10px}.grid2,.options,.matchgrid,.footer-actions{grid-template-columns:1fr}
@@ -98,6 +101,8 @@ input:focus,select:focus{border-color:#6366f1;box-shadow:0 0 0 3px rgba(99,102,2
 <script>
 // DÁN LINK GOOGLE WEB APP VÀO ĐÂY SAU KHI TẠO XONG
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwfu_GYJpkin4655KGvMW1C96HIR42QJs26A3wEb-7D0avwU3ZGD7sXcXkTREP0Tlek1g/exec";
+
+const KEY='tinHocStudentData_v1';
 
 const quiz = {
   id:"demo-001",
@@ -246,9 +251,8 @@ function moveOrder(pos,dir){const x=state.order[pos],to=pos+dir;state.order[pos]
 
 function saveResult(){
   const score10 = Number((state.correct / quiz.questions.length * 10).toFixed(1));
-  const KEY='tinHocStudentData_v1';
   
-  // Lấy dữ liệu hiện tại hoặc tạo mới
+  // Lấy dữ liệu hiện tại hoặc tạo mới (giống cấu trúc preview.html)
   let db = JSON.parse(localStorage.getItem(KEY) || 'null');
   if(!db){
     db = {
@@ -315,7 +319,7 @@ function saveResult(){
 
 function renderResult(){
  const score10=(state.correct/quiz.questions.length*10).toFixed(1);
- app.innerHTML=`<div class="app"><div class="card result"><div class="trophy">🏆</div><div class="badge">HOÀN THÀNH THỬ THÁCH</div><h1>Chúc mừng ${state.name}!</h1><p>${state.className} - ${state.gender}</p><div class="scorebig">${score10}/10</div><p>Bạn trả lời đúng <b>${state.correct}/${quiz.questions.length}</b> câu hỏi</p><div class="footer-actions"><button class="btn primary full" id="again">Làm lại bài</button><button class="btn secondary full" id="home">Trang chủ</button></div></div></div>`;
+ app.innerHTML=`<div class="app"><div class="card result"><div class="trophy">🏆</div><div class="badge">HOÀN THÀNH THỬ THÁCH</div><h1>Chúc mừng ${state.name}!</h1><p>${state.className} - ${state.gender}</p><div class="scorebig">${score10}/10</div><p>Bạn trả lời đúng <b>${state.correct}/${quiz.questions.length}</b> câu hỏi</p><div class="footer-actions"><button class="btn primary full" id="again">Làm lại bài</button><button class="btn secondary full" id="home">Trang chủ</button></div><div class="result-link">✅ Dữ liệu đã được lưu. <a href="preview.html" target="_blank">Xem kết quả đầy đủ tại đây →</a></div></div></div>`;
  document.getElementById("again").onclick=()=>{startExam()};
  document.getElementById("home").onclick=()=>{state.screen="intro";render()};
 }
