@@ -88,7 +88,7 @@ td.name{text-align:left;font-weight:750;font-size:16px}.muted{color:#9aa7ba;font
   <div class="table-wrap">
     <table>
       <thead><tr>
-        <th>STT</th><th>HỌ VÀ TÊN</th><th>GIỚI TÍNH</th><th>BÀI ÔN LUYỆN<br>ĐÃ LÀM</th><th>SỐ LẦN<br>LÀM BÀI</th>
+        <th>STT</th><th>HỌ VÀ TÊN</th><th>BÀI ÔN</th><th>SỐ LẦN<br>LÀM BÀI</th>
         <th><span class="green">ĐIỂM CAO<br>NHẤT (MAX)</span></th><th><span class="red">ĐIỂM<br>THẤP NHẤT<br>(MIN)</span></th>
         <th>ĐIỂM<br>GẦN<br>NHẤT</th><th><span class="purple">THỜI GIAN<br>NỘP BÀI<br>GẦN NHẤT</span></th><th>THAO TÁC</th>
       </tr></thead>
@@ -197,12 +197,12 @@ function render(){
   document.getElementById('statAvg').textContent=latestScores.length?(latestScores.reduce((a,b)=>a+b,0)/latestScores.length).toFixed(1):'-';
 
   const tbody=document.getElementById('studentTable');
-  if(!rows.length){tbody.innerHTML='<tr><td colspan="10" class="empty">Không tìm thấy học sinh phù hợp với bộ lọc.</td></tr>';return}
+  if(!rows.length){tbody.innerHTML='<tr><td colspan="9" class="empty">Không tìm thấy học sinh phù hợp với bộ lọc.</td></tr>';return}
   tbody.innerHTML=rows.map((s,i)=>{
     const x=statsFor(s,examFilter);
     const names=x.ex.map(e=>e.examTitle).filter(Boolean);
     return `<tr>
-      <td>${i+1}</td><td class="name">${esc(s.fullName)}</td><td>${esc(s.gender)}</td>
+      <td>${i+1}</td><td class="name">${esc(s.fullName)}</td>
       <td class="${names.length?'':'muted'}">${names.length?esc(names.join(', ')):'Chưa làm bài'}</td>
       <td>${x.count}</td><td class="green">${x.max===null?'–':x.max}</td><td class="red">${x.min===null?'–':x.min}</td>
       <td class="purple">${x.latest===null?'–':x.latest}</td><td>${x.latestAt?fmtDate(x.latestAt):'–'}</td>
