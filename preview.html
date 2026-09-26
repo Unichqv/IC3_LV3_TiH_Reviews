@@ -386,7 +386,6 @@ function exportData(){
   const a=document.createElement('a');a.href=url;a.download='du_lieu_hoc_vien.csv';a.click();
   URL.revokeObjectURL(url);
 }
-}
 
 window.addEventListener('click',e=>{if(e.target.classList.contains('modal'))e.target.classList.remove('show')});
 
