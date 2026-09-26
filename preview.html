@@ -364,18 +364,18 @@ function deleteClass(){if(confirm('Xóa dữ liệu danh sách hiện tại?')){
 function closeModal(id){document.getElementById(id).classList.remove('show')}
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200)}
 function exportData(){
-  const headers=['Mã học viên','Họ và tên','Giới tính','Lớp','Khối','Tên bài ôn luyện','Lần làm','Điểm','Số câu đúng','Số câu sai','Thời gian nộp'];
+  const headers=['Mã học viên','Họ và tên','Lớp','Khối','Tên bài ôn luyện','Lần làm','Điểm','Số câu đúng','Số câu sai','Thời gian nộp'];
   const csvCell=value=>`"${String(value??'').replace(/"/g,'""')}"`;
   const rows=[headers];
 
   db.students.forEach(student=>{
     const attempts=examsOf(student).flatMap(exam=>(exam.attempts||[]).map(attempt=>({exam,attempt})));
     if(!attempts.length){
-      rows.push([student.studentId,student.fullName,student.gender,student.className,student.grade,'','','','','','']);
+      rows.push([student.studentId,student.fullName,student.className,student.grade,'','','','','','']);
       return;
     }
     attempts.forEach(({exam,attempt})=>rows.push([
-      student.studentId,student.fullName,student.gender,student.className,student.grade,
+      student.studentId,student.fullName,student.className,student.grade,
       exam.examTitle,attempt.attemptNumber,attempt.score,attempt.correctAnswers,attempt.wrongAnswers,fmtDate(attempt.submittedAt)
     ]));
   });
