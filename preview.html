@@ -364,8 +364,28 @@ function deleteClass(){if(confirm('Xóa dữ liệu danh sách hiện tại?')){
 function closeModal(id){document.getElementById(id).classList.remove('show')}
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200)}
 function exportData(){
-  const blob=new Blob([JSON.stringify(db,null,2)],{type:'application/json'});
-  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='du_lieu_hoc_vien.json';a.click();URL.revokeObjectURL(a.href);
+  const headers=['Mã học viên','Họ và tên','Giới tính','Lớp','Khối','Tên bài ôn luyện','Lần làm','Điểm','Số câu đúng','Số câu sai','Thời gian nộp'];
+  const csvCell=value=>`"${String(value??'').replace(/"/g,'""')}"`;
+  const rows=[headers];
+
+  db.students.forEach(student=>{
+    const attempts=examsOf(student).flatMap(exam=>(exam.attempts||[]).map(attempt=>({exam,attempt})));
+    if(!attempts.length){
+      rows.push([student.studentId,student.fullName,student.gender,student.className,student.grade,'','','','','','']);
+      return;
+    }
+    attempts.forEach(({exam,attempt})=>rows.push([
+      student.studentId,student.fullName,student.gender,student.className,student.grade,
+      exam.examTitle,attempt.attemptNumber,attempt.score,attempt.correctAnswers,attempt.wrongAnswers,fmtDate(attempt.submittedAt)
+    ]));
+  });
+
+  const csv='\uFEFF'+rows.map(row=>row.map(csvCell).join(',')).join('\r\n');
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download='du_lieu_hoc_vien.csv';a.click();
+  URL.revokeObjectURL(url);
+}
 }
 
 window.addEventListener('click',e=>{if(e.target.classList.contains('modal'))e.target.classList.remove('show')});
