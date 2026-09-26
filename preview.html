@@ -76,7 +76,7 @@ td.name{text-align:left;font-weight:750;font-size:16px}.muted{color:#9aa7ba;font
   <section class="stats">
     <div class="stat"><span>Tổng học sinh</span><div class="n" id="statStudents">0</div></div>
     <div class="stat"><span>Đã làm bài</span><div class="n" id="statDone">0</div></div>
-    <div class="stat"><span>Lượt làm bài</span><div class="n" id="statAttempts">0</div></div>
+    <div class="stat"><span>Tổng số lần làm bài</span><div class="n" id="statAttempts">0</div></div>
     <div class="stat"><span>Điểm trung bình gần nhất</span><div class="n" id="statAvg">-</div></div>
   </section>
 
@@ -88,7 +88,7 @@ td.name{text-align:left;font-weight:750;font-size:16px}.muted{color:#9aa7ba;font
   <div class="table-wrap">
     <table>
       <thead><tr>
-        <th>STT</th><th>HỌ VÀ TÊN</th><th>GIỚI TÍNH</th><th>BÀI ÔN LUYỆN<br>ĐÃ LÀM</th><th>SỐ<br>LẦN<br>LÀM</th>
+        <th>STT</th><th>HỌ VÀ TÊN</th><th>GIỚI TÍNH</th><th>BÀI ÔN LUYỆN<br>ĐÃ LÀM</th><th>SỐ LẦN<br>LÀM BÀI</th>
         <th><span class="green">ĐIỂM CAO<br>NHẤT (MAX)</span></th><th><span class="red">ĐIỂM<br>THẤP NHẤT<br>(MIN)</span></th>
         <th>ĐIỂM<br>GẦN<br>NHẤT</th><th><span class="purple">THỜI GIAN<br>NỘP BÀI<br>GẦN NHẤT</span></th><th>THAO TÁC</th>
       </tr></thead>
@@ -132,6 +132,8 @@ td.name{text-align:left;font-weight:750;font-size:16px}.muted{color:#9aa7ba;font
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwfu_GYJpkin4655KGvMW1C96HIR42QJs26A3wEb-7D0avwU3ZGD7sXcXkTREP0Tlek1g/exec";
 
 const KEY='tinHocStudentData_v1';
+const DELETED_KEY='tinHocDeletedStudents_v1';
+let deletedStudents=JSON.parse(localStorage.getItem(DELETED_KEY)||'[]');
 let editId=null;
 
 const seed={
@@ -143,6 +145,7 @@ const seed={
 let db=JSON.parse(localStorage.getItem(KEY)||'null')||seed;
 
 function save(){localStorage.setItem(KEY,JSON.stringify(db));}
+function studentKey(name,className){return JSON.stringify([String(name||'').trim().toLowerCase(),String(className||'').trim().toLowerCase()]);}
 function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));}
 function fmtDate(s){if(!s)return '-';const d=new Date(s);return isNaN(d)?s:d.toLocaleString('vi-VN',{hour:'2-digit',minute:'2-digit',day:'2-digit',month:'2-digit',year:'numeric'});}
 function examsOf(s){return s.exams||[]}
@@ -214,7 +217,9 @@ function fetchFromCloud(){
         const [time, name, className, gender, examTitle, score, correct, wrong] = rows[i];
         if(!name) continue;
         
-        const key = name.trim().toLowerCase() + "_" + className.trim().toLowerCase();
+        const normalizedKey = studentKey(name,className || 'Lớp Năm 1');
+        if(deletedStudents.includes(normalizedKey)) continue;
+        const key = normalizedKey;
         if(!studentMap[key]){
           studentMap[key] = {
             studentId: 'HS' + String(i).padStart(4, '0'),
@@ -272,7 +277,13 @@ function saveStudent(){
 function editStudent(id){openStudentModal(id)}
 function deleteStudent(id){
   const s=db.students.find(x=>x.studentId===id);if(!s)return;
-  if(confirm(`Xóa học sinh "${s.fullName}" khỏi danh sách hiển thị tạm thời?`)){db.students=db.students.filter(x=>x.studentId!==id);save();refresh();toast('Đã xóa học sinh')}
+  if(confirm(`Xóa học sinh "${s.fullName}" khỏi danh sách trên trình duyệt này? Dữ liệu trong Google Sheet vẫn còn.`)){
+    const key=studentKey(s.fullName,s.className);
+    if(!deletedStudents.includes(key)) deletedStudents.push(key);
+    localStorage.setItem(DELETED_KEY,JSON.stringify(deletedStudents));
+    db.students=db.students.filter(x=>x.studentId!==id);
+    save();refresh();toast('Đã xóa khỏi danh sách trên trình duyệt này');
+  }
 }
 
 function viewStudent(id){
