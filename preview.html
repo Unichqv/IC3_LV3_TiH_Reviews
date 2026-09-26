@@ -64,7 +64,8 @@ td.name{text-align:left;font-weight:750;font-size:16px}.muted{color:#9aa7ba;font
 <main class="container">
   <section class="class-head">
     <div>
-      <div class="title-row"><span class="badge grade">KHỐI 5</span><select id="classFilter" aria-label="Lọc theo lớp" onchange="render()"><option value="">Tất cả lớp</option></select><h2 id="classTitle">Lớp Năm 1</h2><span class="badge count" id="studentCount">0 Học Sinh</span></div>
+      <div class="title-row"><span class="badge grade">KHỐI 5</span><select id="classFilter" aria-label="Lọc theo lớp" onchange="render()"><option value="">Tất cả lớp</option></select><button class="btn outline" type="button" onclick="addClass()">＋ Thêm lớp</button><h2 id="classTitle">Lớp Năm 1</h2><span class="badge count" id="studentCount">0 Học Sinh</span></div>
+      <p class="sub">Lớp Tin học nâng cao khối 5</p>
     </div>
     <div class="actions">
       <button class="btn outline" onclick="openClassModal()">✎ Sửa Lớp</button>
@@ -132,6 +133,7 @@ const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwfu_GYJpkin4655KGvM
 
 const KEY='tinHocStudentData_v1';
 const DELETED_KEY='tinHocDeletedStudents_v1';
+const CLASSES_KEY='tinHocClasses_v1';
 let deletedStudents=JSON.parse(localStorage.getItem(DELETED_KEY)||'[]');
 let editId=null;
 
@@ -149,7 +151,21 @@ function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&l
 function fmtDate(s){if(!s)return '-';const d=new Date(s);return isNaN(d)?s:d.toLocaleString('vi-VN',{hour:'2-digit',minute:'2-digit',day:'2-digit',month:'2-digit',year:'numeric'});}
 function examsOf(s){return s.exams||[]}
 function allExamNames(){return [...new Set(db.students.flatMap(s=>examsOf(s).map(e=>e.examTitle)).filter(Boolean))]}
-function allClassNames(){return [...new Set([db.classInfo.name,...db.students.map(s=>s.className)].filter(Boolean))]}
+function allClassNames(){
+  const savedClasses=JSON.parse(localStorage.getItem(CLASSES_KEY)||'[]');
+  return [...new Set([db.classInfo.name,...savedClasses,...db.students.map(s=>s.className)].filter(Boolean))];
+}
+function uniqueStudentsByName(students){
+  const seen=new Set();
+  return students.filter(s=>{
+    const name=String(s.fullName||'').trim().toLowerCase();
+    const className=String(s.className||'').trim().toLowerCase();
+    const key=JSON.stringify([className,name]);
+    if(!name||seen.has(key))return false;
+    seen.add(key);
+    return true;
+  });
+}
 
 function statsFor(s,filter=''){
   let ex=examsOf(s); if(filter) ex=ex.filter(e=>e.examTitle===filter);
@@ -166,11 +182,12 @@ function render(){
   const examFilter=document.getElementById('examFilter').value;
   const classFilter=document.getElementById('classFilter').value;
   const rows=db.students.filter(s=>(!classFilter||s.className===classFilter)&&String(s.fullName||'').toLowerCase().includes(q));
+  const uniqueRows=uniqueStudentsByName(rows);
   document.getElementById('classTitle').textContent=classFilter||'Tất cả lớp';
-  document.getElementById('studentCount').textContent=`${rows.length} Học Sinh`;
-  document.getElementById('statStudents').textContent=rows.length;
+  document.getElementById('studentCount').textContent=`${uniqueRows.length} Học Sinh`;
+  document.getElementById('statStudents').textContent=uniqueRows.length;
   let totalAttempts=0, done=0, latestScores=[];
-  rows.forEach(s=>{
+  uniqueRows.forEach(s=>{
     const x=statsFor(s,examFilter);
     totalAttempts+=x.count;
     if(x.count){done++;latestScores.push(Number(x.latest));}
@@ -182,7 +199,7 @@ function render(){
   const tbody=document.getElementById('studentTable');
   if(!rows.length){tbody.innerHTML='<tr><td colspan="10" class="empty">Không tìm thấy học sinh phù hợp với bộ lọc.</td></tr>';return}
   tbody.innerHTML=rows.map((s,i)=>{
-    const x=statsFor(s,filter);
+    const x=statsFor(s,examFilter);
     const names=x.ex.map(e=>e.examTitle).filter(Boolean);
     return `<tr>
       <td>${i+1}</td><td class="name">${esc(s.fullName)}</td><td>${esc(s.gender)}</td>
@@ -209,6 +226,23 @@ function renderClassFilter(){
   const classes=allClassNames();
   el.innerHTML='<option value="">Tất cả lớp</option>'+classes.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join('');
   el.value=classes.includes(old)?old:'';
+}
+
+function addClass(){
+  const className=prompt('Nhập tên lớp mới:');
+  if(!className||!className.trim())return;
+  const name=className.trim();
+  const classes=JSON.parse(localStorage.getItem(CLASSES_KEY)||'[]');
+  if(classes.some(x=>x.trim().toLowerCase()===name.toLowerCase())){
+    toast('Lớp này đã có trong danh sách');
+    return;
+  }
+  classes.push(name);
+  localStorage.setItem(CLASSES_KEY,JSON.stringify(classes));
+  refresh();
+  document.getElementById('classFilter').value=name;
+  render();
+  toast('Đã thêm lớp');
 }
 
 function refresh(){renderFilter();renderClassFilter();render()}
