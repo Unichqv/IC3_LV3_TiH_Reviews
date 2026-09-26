@@ -536,6 +536,22 @@
 
   <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwfu_GYJpkin4655KGvMW1C96HIR42QJs26A3wEb-7D0avwU3ZGD7sXcXkTREP0Tlek1g/exec";
+
+    // CẤU HÌNH TRỘN: đổi true/false để bật/tắt từng kiểu trộn.
+    const SHUFFLE_QUESTIONS = true; // Trộn thứ tự câu hỏi mỗi lần bắt đầu/làm lại.
+    const SHUFFLE_TRUE_FALSE = true; // Trộn vị trí nút Đúng/Sai trong câu dạng binary.
+
+    let activeQuestions = [];
+    let trueFalseChoices = [true, false];
+
+    function shuffleArray(items) {
+      const shuffled = [...items];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      return shuffled;
+    }
     
     const quiz = {
       id: "demo-001",
@@ -600,6 +616,7 @@
       lives: 3,
       score: 0,
       correct: 0,
+      attemptNumber: null,
       answered: false,
       answerCorrect: null,
       selected: null,
@@ -612,6 +629,44 @@
     };
 
     const app = document.getElementById("app");
+
+    function getAvailableClasses() {
+      const classes = new Set();
+      try {
+        const savedClasses = JSON.parse(localStorage.getItem("tinHocClasses_v1") || "[]");
+        savedClasses.forEach(name => { if (typeof name === "string" && name.trim()) classes.add(name.trim()); });
+
+        const db = JSON.parse(localStorage.getItem("tinHocStudentData_v1") || "null");
+        if (db?.classInfo?.name) classes.add(db.classInfo.name.trim());
+        (db?.students || []).forEach(student => {
+          if (student.className?.trim()) classes.add(student.className.trim());
+        });
+      } catch (error) {
+        console.error("Không thể đọc danh sách lớp đã lưu:", error);
+      }
+      if (!classes.size) classes.add("Lớp Năm 1");
+      return [...classes];
+    }
+
+    function populateClassOptions() {
+      const select = document.getElementById("className");
+      if (!select) return;
+      const currentValue = select.value || state.className;
+      const classes = getAvailableClasses();
+      select.replaceChildren(...classes.map(name => {
+        const option = document.createElement("option");
+        option.value = name;
+        option.textContent = name;
+        return option;
+      }));
+      select.value = classes.includes(currentValue) ? currentValue : classes[0];
+    }
+
+    window.addEventListener("storage", event => {
+      if (["tinHocClasses_v1", "tinHocStudentData_v1"].includes(event.key) && state.screen === "intro") {
+        populateClassOptions();
+      }
+    });
 
     function render() {
       if (state.screen === "intro") renderIntro();
@@ -636,11 +691,7 @@
               <form id="startForm" class="form-group">
                 <div style="margin-bottom: 16px;">
                   <label>Chọn Lớp Học</label>
-                  <select id="className">
-                    <option>Lớp Năm 1</option>
-                    <option>Lớp Năm 2</option>
-                    <option>Lớp Năm 3</option>
-                  </select>
+                  <select id="className"></select>
                 </div>
 
                 <div>
@@ -657,6 +708,8 @@
           </div>
         </div>
       `;
+
+      populateClassOptions();
 
       document.getElementById("startForm").onsubmit = (e) => {
         e.preventDefault();
@@ -682,7 +735,10 @@
       state.lives = 3;
       state.score = 0;
       state.correct = 0;
+      state.attemptNumber = null;
       state.answered = false;
+      activeQuestions = SHUFFLE_QUESTIONS ? shuffleArray(quiz.questions) : [...quiz.questions];
+      trueFalseChoices = SHUFFLE_TRUE_FALSE ? shuffleArray([true, false]) : [true, false];
       prepareQuestion();
       render();
     }
@@ -696,7 +752,7 @@
       state.matches = {};
       state.selectedLeft = null;
 
-      const q = quiz.questions[state.index];
+      const q = activeQuestions[state.index];
       if (q.type === "process-order" && q.steps) {
         state.order = q.steps.map((_, i) => i).sort(() => Math.random() - 0.5);
       }
@@ -722,7 +778,7 @@
         render();
         return;
       }
-      if (state.index + 1 >= quiz.questions.length) {
+      if (state.index + 1 >= activeQuestions.length) {
         saveResult();
         state.screen = "result";
         render();
@@ -734,7 +790,7 @@
     }
 
     function renderExam() {
-      const q = quiz.questions[state.index];
+      const q = activeQuestions[state.index];
       let bodyHTML = "";
 
       if (q.type === "multiple-choice") {
@@ -796,10 +852,10 @@
               <div class="binary-item">
                 <span style="flex: 1;">${idx + 1}. ${item[0]}</span>
                 <div class="binary-buttons">
-                  <button class="binary-btn yes ${state.binary[idx] === true ? "active" : ""}" 
-                          ${state.answered ? "disabled" : ""} data-bin="${idx}:true">Đúng</button>
-                  <button class="binary-btn no ${state.binary[idx] === false ? "active" : ""}" 
-                          ${state.answered ? "disabled" : ""} data-bin="${idx}:false">Sai</button>
+                  ${trueFalseChoices.map(value => `
+                    <button class="binary-btn ${value ? "yes" : "no"} ${state.binary[idx] === value ? "active" : ""}"
+                            ${state.answered ? "disabled" : ""} data-bin="${idx}:${value}">${value ? "Đúng" : "Sai"}</button>
+                  `).join("")}
                 </div>
               </div>
             `).join("")}
@@ -838,9 +894,9 @@
                   <span class="stat-badge score">⭐ ${state.score}</span>
                   ${state.correct >= 2 ? `<span class="stat-badge combo">🔥 x${state.correct}</span>` : ""}
                 </div>
-                <div style="font-weight: 700; color: #667eea;">Câu ${state.index + 1}/${quiz.questions.length}</div>
+                <div style="font-weight: 700; color: #667eea;">Câu ${state.index + 1}/${activeQuestions.length}</div>
               </div>
-              <div class="progress-bar"><div style="width: ${((state.index + 1) / quiz.questions.length) * 100}%"></div></div>
+              <div class="progress-bar"><div style="width: ${((state.index + 1) / activeQuestions.length) * 100}%"></div></div>
             </div>
 
             <div class="card" style="margin-top: 16px;">
@@ -968,15 +1024,14 @@
     }
 
     function saveResult() {
-      const score10 = Number((state.correct / quiz.questions.length * 10).toFixed(1));
+      const score10 = Number((state.correct / activeQuestions.length * 10).toFixed(1));
       const payload = {
         fullName: state.name,
         className: state.className,
-        gender: state.gender,
         examTitle: quiz.title,
         score: score10,
         correctAnswers: state.correct,
-        wrongAnswers: quiz.questions.length - state.correct,
+        wrongAnswers: activeQuestions.length - state.correct,
         submittedAt: new Date().toISOString()
       };
 
@@ -1011,18 +1066,20 @@
         student.exams.push(exam);
       }
 
+      state.attemptNumber = exam.attempts.length + 1;
       exam.attempts.push({
-        attemptNumber: exam.attempts.length + 1,
+        attemptNumber: state.attemptNumber,
         examTitle: quiz.title,
         score: score10,
         correctAnswers: state.correct,
-        wrongAnswers: quiz.questions.length - state.correct,
+        wrongAnswers: activeQuestions.length - state.correct,
         submittedAt: new Date().toISOString()
       });
 
       localStorage.setItem(KEY, JSON.stringify(db));
 
       // Gửi lên Google Apps Script
+      payload.attemptNumber = state.attemptNumber;
       if (SCRIPT_URL && !SCRIPT_URL.includes("DÁN_LINK")) {
         fetch(SCRIPT_URL, {
           method: "POST",
@@ -1034,7 +1091,7 @@
     }
 
     function renderResult() {
-      const score10 = (state.correct / quiz.questions.length * 10).toFixed(1);
+      const score10 = (state.correct / activeQuestions.length * 10).toFixed(1);
       app.innerHTML = `
         <div class="app">
           <div class="container">
@@ -1042,9 +1099,9 @@
               <div class="trophy">🏆</div>
               <div class="badge">✅ HOÀN THÀNH THỬ THÁCH</div>
               <h1>Chúc mừng ${state.name}!</h1>
-              <p style="color: #667; font-size: 14px;">${state.className}</p>
+              <p style="color: #667; font-size: 14px;">${state.className} · Lần làm bài thứ ${state.attemptNumber}</p>
               <div class="score-big">${score10}/10</div>
-              <p style="color: #555; font-size: 14px;">Bạn trả lời đúng <strong>${state.correct}/${quiz.questions.length}</strong> câu hỏi</p>
+              <p style="color: #555; font-size: 14px;">Bạn trả lời đúng <strong>${state.correct}/${activeQuestions.length}</strong> câu hỏi</p>
               <div class="result-actions">
                 <button class="btn btn-primary" id="again">🔄 Làm Lại</button>
                 <button class="btn" style="background: #f0f0f0; color: #333; border: none;" id="home">🏠 Trang Chủ</button>
@@ -1068,7 +1125,7 @@
               <div class="trophy">💔</div>
               <div class="badge" style="background: #ffebee; color: #c62828;">⚠️ HẾT 3 TRÁI TIM SINH MỆNH</div>
               <h1>Tiếc quá ${state.name}!</h1>
-              <p style="color: #555; font-size: 14px;">Bạn đã hết mạng sống. Các bạn có muốn thử lại không?</p>
+              <p style="color: #555; font-size: 14px;">Lần làm bài thứ ${state.attemptNumber}. Bạn đã hết mạng sống. Các bạn có muốn thử lại không?</p>
               <div class="result-actions">
                 <button class="btn btn-primary" id="retry">🔄 Thử Lại</button>
                 <button class="btn" style="background: #f0f0f0; color: #333; border: none;" onclick="state.screen='intro';render()">🏠 Trang Chủ</button>
